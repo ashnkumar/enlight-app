@@ -22,7 +22,7 @@
     return self;
 }
 
-- (void)setBeacon:(NSString *)color withAngle:(NSNumber *)angle withRole:(NSString *)role withUDID:(NSString *)udid withMajor:(NSString *)major withMinor:(NSString *)minor
+- (void)setBeacon:(NSString *)color withRole:(NSString *)role withUDID:(NSString *)udid withMajor:(NSString *)major withMinor:(NSString *)minor withX:(float)xCoord withY:(float)yCoord
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Beacon"];
     [query whereKey:@"Color" equalTo:color];
@@ -33,7 +33,6 @@
             {
                 PFObject *beacon = [objects firstObject];
                 //Capabilities currently only allow setting angle and role; udid and color should remain fixed
-                [beacon setObject:angle forKey:@"Angle"];
                 [beacon setObject:role forKey:@"Role"];
                 [beacon saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if (!succeeded) {
@@ -45,7 +44,6 @@
             {
                 // Make a new object
                 PFObject *beacon = [PFObject objectWithClassName:@"Beacon"];
-                beacon[@"Angle"] = angle;
                 beacon[@"Role"] = role;
                 beacon[@"Color"] = color;
                 if (udid)
