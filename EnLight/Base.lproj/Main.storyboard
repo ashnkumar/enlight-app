@@ -71,6 +71,9 @@
                         <color key="backgroundColor" red="1" green="0.80000001192092896" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="roomViewRectangle" destination="p87-cz-H8C" id="E2M-Xl-JdZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Sv-AJ-jOb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

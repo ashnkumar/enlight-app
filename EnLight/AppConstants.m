@@ -65,4 +65,15 @@
     return 36.0;
 }
 
+#pragma mark - Beacons
+
++ (NSDictionary *)beaconMapping
+{
+    return @{ @"c781b0b8375d": @[@"14173", @"purple", @"purpleBeacon"],
+              @"ce3cf6c0e564": @[@"58724", @"green", @"greenBeacon"],
+              @"e2795af17586": @[@"50573", @"blue1", @"blueBeacon"],
+              @"f6669ae41481": @[@"5249", @"blue2", @"blueBeacon"]
+             };
+}
+
 @end

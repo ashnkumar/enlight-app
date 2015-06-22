@@ -26,4 +26,7 @@
 + (float)subscriptFontSize;
 + (float)buttonFontSize;
 
+//Beacons
++ (NSDictionary *)beaconMapping;
+
 @end
