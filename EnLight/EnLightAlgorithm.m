@@ -50,17 +50,17 @@
 
 - (void)setBeaconCoordinates
 {
-    beacon1X = -10;
+    beacon1X = -5;
     beacon1Y = 0;
     
     beacon2X = 0;
-    beacon2Y = 10;
+    beacon2Y = 5;
     
-    beacon3X = 10;
+    beacon3X = 5;
     beacon3Y = 0;
     
     beacon4X = 0;
-    beacon4Y = -10;
+    beacon4Y = -5;
 }
 
 - (BOOL)matchedNeededHeading:(float)givenHeading withCoordinates:(NSArray *)passedUser
@@ -161,7 +161,8 @@
     //Calculate the needed headings
     if (userX < beaconX && userY < beaconY)
     {
-        neededHeading = 90 - angleOfTriangle;
+        //neededHeading = 90 - angleOfTriangle;
+        neededHeading = angleOfTriangle;
     }
     else if (userX < beaconX && userY > beaconY)
     {
@@ -176,12 +177,15 @@
         neededHeading = 360 - angleOfTriangle;
     }
     //Edge cases: userX == beaconX and/or userX == beaconY; ignore for now (beacons change so often you probably wouldn't be exactly equal ever
+    
+    NSLog(@"for beacon %i, heading needed is: %f", num, neededHeading);
+    
     //Final step: test if they match!!! (TODO: or are close)
-    if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
+    /*if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
     {
-        NSLog(@"algorithm returned true for beacon %i", num);
+        //NSLog(@"algorithm returned true for beacon %i", num);
         return true;
-    }
+    }*/
     return false;
 }
 
