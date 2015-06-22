@@ -131,6 +131,13 @@
     [self.descriptionLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:self.descriptionLabel];
     
+    // [AK] =============================================================
+    //      This is where we get the indoor view to display to the user
+    //      I had problems with adding the "positionView" (the guy that
+    //      represents where the user is on the map) due to some CALayer
+    //      errors. If we can't figure this out, let's stick with the
+    //      basic version without the indoor view
+    // [AK] =============================================================
     // Get position view from Estimote
     self.indoorLocationView = [[ESTIndoorLocationView alloc] initWithFrame:self.building.frame];
     self.indoorLocationView.backgroundColor = [UIColor clearColor];
@@ -152,10 +159,8 @@
 
 - (void)addEstimotePositionView
 {
-//    NSLog(@"frame: %@", NSStringFromCGRect(self.indoorLocationView.frame));
 //    self.positionView = [[ESTPositionView alloc] initWithImage:[UIImage imageNamed:@"navigation_guy"] location:self.location forViewWithBounds:self.indoorLocationView.bounds];
-    self.positionView = [[ESTPositionView alloc] init];
-    self.indoorLocationView.positionView = self.positionView;
+//    self.indoorLocationView.positionView = self.positionView;
     [self.indoorLocationView drawLocation:self.myLocation];
     [self.manager startIndoorLocation:self.myLocation];
 }
@@ -333,8 +338,25 @@
        didUpdateHeading:(CLHeading *)newHeading
 {
     if (self.currentUserCoordinate.x && self.currentUserCoordinate.y) {
+        
         double headingToSend = newHeading.trueHeading;
+        
+        // [AK] =============================================================
+        //      This is where the magic happens, I am checking whenever the
+        //      user's heading changes, if they are looking at a beacon
+        //      and displaying that beacon to the user
+        
+        //      @TODO: We need to have the speech synthesizer speak out the
+        //      ROLE of the beacon (right now it just displays the color,
+        //      so we need to get the beaconMapping from parse somewhere and
+        //      figure out what role that color corresponds to (you can add
+        //      that role checking in the algorithm or elsewhere, doesn't
+        //      need to be done here)
+        
+        // [AK] =============================================================
+        
         NSString *returnedBeaconColor = [self.algoHelper beaconMatchingHeading:headingToSend withCoordinates:self.currentUserCoordinate];
+        
         if (returnedBeaconColor) {
             self.foundBeaconLabel.text = returnedBeaconColor;
         }
@@ -351,7 +373,6 @@
     }
     
     //TODO: Display self.user based on the user's first heading
-    
     
     double degrees = newHeading.trueHeading;
     double radians = degrees * M_PI / 180;

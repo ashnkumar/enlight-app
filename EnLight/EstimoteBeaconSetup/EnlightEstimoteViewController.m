@@ -49,7 +49,6 @@ const float beaconButtonImageHeight = 38.0;
 @property (weak, nonatomic) IBOutlet UIButton *doneButton;
 @property (weak, nonatomic) IBOutlet UILabel *pleaseSelectRolesLabel;
 
-
 @end
 
 @implementation EnlightEstimoteViewController
@@ -60,7 +59,11 @@ const float beaconButtonImageHeight = 38.0;
     self.db = [[EnLightDBManager alloc]init];
     self.db.delegate = self;
     
-    self.doneButton.hidden = NO;
+    // [AK] =============================================================
+    // Logic to hide/show button/label based on if all beacons have
+    // been setup. See '(void)checkIfRolesAreAllAssigned' method below
+    // [AK] =============================================================
+    self.doneButton.hidden = YES;
     self.pleaseSelectRolesLabel.hidden = NO;
     
     [self authorizeEnlight];
@@ -70,7 +73,9 @@ const float beaconButtonImageHeight = 38.0;
 {
     [super viewDidAppear:animated];
 
-    // For testing
+    // For testing, loads from JSON. In reality we will load from the
+    // onboarding process that Estimote provides us (see note below)
+    
     if (!self.myLocation) {
         [self loadLocationsFromJSON];
         //    [self showLocationSetup];
@@ -88,6 +93,15 @@ const float beaconButtonImageHeight = 38.0;
     [ESTConfig setupAppID:TLEstimoteAppID andAppToken:TLEstimoteAppToken];
 }
 
+// [AK] =============================================================
+// @TODO: Right now this loads directly from the json file which has all
+// the relevant information to make a 'ESTLocation' (that's what they call
+// the whole room + beacons + etc. After we get all the UI working, we can
+// replace that JSON location with the Location object that Estimote gives us
+// from this 'showLocationSetup' onboarding process (this is the thing where
+// they guide the user around the room to set up the beacons
+// [AK] =============================================================
+
 - (void)showLocationSetup
 {
     __weak EnlightEstimoteViewController *weakSelf = self;
@@ -101,8 +115,8 @@ const float beaconButtonImageHeight = 38.0;
                 
                 NSLog(@"We got a location: %@", location);
                 
-//                self.myLocation = location;
-//                [self mapBeaconsOnScreenWithLocation:(ESTLocation *)location];
+                self.myLocation = location;
+                [self mapBeaconsOnScreenWithLocation:(ESTLocation *)location];
             }
             
             else {
@@ -131,16 +145,19 @@ const float beaconButtonImageHeight = 38.0;
     NSLog(@"Beacons: %@", beacons);
 }
 
+
+// [AK] =============================================================
+// Calculates where on the wall the beacon actually is, and also
+// adjusts the color of the beacon image based on which beacon it is
+// [AK] =============================================================
+
 - (void)mapBeaconsOnScreenWithLocation:(ESTLocation *)location
 {
     UIView *roomView = self.roomViewRectangle;
-//    NSLog(@"Boudnary segments: %@", location.boundarySegments);
     [location.beacons enumerateObjectsUsingBlock:^(ESTPositionedBeacon *beacon, NSUInteger idx, BOOL *stop) {
         
         int relevantLineSegmentIdx = (idx > 0) ? idx-1 : 3;
         ESTOrientedLineSegment *relevantLineSegment = location.boundarySegments[relevantLineSegmentIdx];
-//        NSLog(@"Line segment: %@", relevantLineSegment);
-//        NSLog(@"Line segment length: %.2f", relevantLineSegment.length);
         
         CGPoint linePoint1 = CGPointMake(relevantLineSegment.point1.x, relevantLineSegment.point1.y);
         CGPoint linePoint2 = CGPointMake(relevantLineSegment.point2.x, relevantLineSegment.point2.y);
@@ -152,7 +169,6 @@ const float beaconButtonImageHeight = 38.0;
                                                                         point2:CGPointMake(beacon.position.x, beacon.position.y)];
         
         float beaconPercentFromPoint1OfWall = lengthFromPoint1OfWallToBeacon / lengthOfRelevantWall;
-//        NSLog(@"percent: %.4f", beaconPercentFromPoint1OfWall);
         
         NSString *beaconMacAddress = beacon.macAddress;
         NSArray *beaconArr = [[AppConstants beaconMapping] objectForKey:beaconMacAddress];
@@ -277,6 +293,7 @@ const float beaconButtonImageHeight = 38.0;
     [actionSheet showInView:self.view];
 }
 
+// If all the beacons are assigned, user can press 'done' button and move on
 - (void)checkIfRolesAreAllAssigned
 {
     if (self.beacon1RoleLabel.text.length && self.beacon2RoleLabel.text.length && self.beacon3RoleLabel.text.length && self.beacon4RoleLabel.text.length) {
@@ -295,12 +312,6 @@ const float beaconButtonImageHeight = 38.0;
     [self performSegueWithIdentifier:@"wandSegue" sender:self];
 }
 
-- (float)lengthOfSegmentWithPoint1:(CGPoint)point1
-                            point2:(CGPoint)point2
-{
-    CGFloat distance = hypotf(point1.x - point2.x, point1.y - point2.y);
-    return distance;
-}
 
 #pragma mark - Other
 
@@ -311,6 +322,14 @@ const float beaconButtonImageHeight = 38.0;
         wandViewController.myLocation = self.myLocation;
     }
 }
+
+- (float)lengthOfSegmentWithPoint1:(CGPoint)point1
+                            point2:(CGPoint)point2
+{
+    CGFloat distance = hypotf(point1.x - point2.x, point1.y - point2.y);
+    return distance;
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

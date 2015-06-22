@@ -68,6 +68,15 @@
     }];
 }
 
+// [AK] =============================================================
+// This is to simply set the role for each beacon.
+// THIS IS THE METHOD WE WANT TO CALL WHEN SETTING ROLES
+// since the other factors of the beacons in Parse shouldn't change
+// (i.e. we don't need to 'seed' the beacons since we can seed them
+// now before sending to the judges)
+// [AK] =============================================================
+
+
 - (void)simpleSetBeaconWithColor:(NSString *)color withRole:(NSString *)role
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Beacon"];
@@ -135,8 +144,6 @@
         [self simpleSetBeaconWithColor:beaconColor withRole:configDictionary[beaconColor]];
     }
 }
-
-
 
 
 

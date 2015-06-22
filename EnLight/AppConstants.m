@@ -67,6 +67,12 @@
 
 #pragma mark - Beacons
 
+// [AK] =============================================================
+// @TODO: These are all ok, except the last value (the role) needs to be
+// dynamically set based on Parse. The other values can be used since
+// they will be static for the demo
+// [AK] =============================================================
+
 + (NSDictionary *)beaconMapping
 {
     return @{ @"c781b0b8375d": @[@"14173", @"purple", @"purpleBeacon", @"Exit"],

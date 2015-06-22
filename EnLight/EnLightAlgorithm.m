@@ -20,7 +20,12 @@
     self = [super init];
     if (self)
     {
-        //Initialize the beacons
+        // [AK] =============================================================
+        // @TODO: This needs to come from Parse; I'm using dummy data
+        // (from the ashwinLocation.json file). It corresponds to the actual
+        // beacons I had from when I really did map the room
+        // [AK] =============================================================
+        
         _beaconsArr = @[@{@"color": @"green",
                           @"xCoord": @-0.6079069349184979,
                           @"yCoord": @2.37729769708943},
@@ -65,7 +70,7 @@
     
     else
     {
-        NSLog(@"passed user in algorithm was not passed correctly");
+        NSLog(@"passed user coordinates in algorithm was not passed correctly");
         return nil;
     }
     
@@ -73,7 +78,8 @@
 }
 
 - (BOOL)testBeaconWithColor:(NSString *)beaconColor
-                    beaconX:(float)beaconX beaconY:(float)beaconY
+                    beaconX:(float)beaconX
+                    beaconY:(float)beaconY
                 withHeading:(float)givenHeading
                       userX:(float)userX
                       userY:(float)userY
@@ -133,12 +139,8 @@
     }
     //Edge cases: userX == beaconX and/or userX == beaconY; ignore for now (beacons change so often you probably wouldn't be exactly equal ever
     
-//    NSLog(@"for beacon %i, heading needed is: %f", num, neededHeading);
-    
-    //Final step: test if they match!!! (TODO: or are close)
     if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
     {
-//        NSLog(@"algorithm returned true for beacon %i", num);
         return true;
     }
     
