@@ -7,6 +7,7 @@
 //
 
 #import "EnLightAlgorithm.h"
+#define variance 90 //Set this variance for how big to make the acceptance range IN DEGREES
 
 @implementation EnLightAlgorithm
 {
@@ -49,12 +50,22 @@
 
 - (void)setBeaconCoordinates
 {
+    beacon1X = -10;
+    beacon1Y = 0;
     
+    beacon2X = 0;
+    beacon2Y = 10;
+    
+    beacon3X = 10;
+    beacon3Y = 0;
+    
+    beacon4X = 0;
+    beacon4Y = -10;
 }
 
-- (BOOL)matchedNeededHeading:(CLHeading *)givenHeading withCoordinates:(NSArray *)passedUser
+- (BOOL)matchedNeededHeading:(float)givenHeading withCoordinates:(NSArray *)passedUser
 {
-    BOOL result;
+    BOOL result = NO;
     
     if (passedUser.count == 2)
     {
@@ -63,7 +74,7 @@
         temp = [passedUser lastObject];
         userY = [temp floatValue];
         
-        BOOL testIfHeadingsMatch;
+        BOOL testIfHeadingsMatch = NO;
         for (int i = 0; i < 4; i++)
         {
             testIfHeadingsMatch = [self testBeacon:i+1 withHeading:givenHeading];
@@ -78,20 +89,58 @@
     return result;
 }
 
-- (BOOL)testBeacon:(int)num withHeading:(CLHeading *)givenHeading
+- (BOOL)testBeacon:(int)num withHeading:(float)givenHeading
 {
     float beaconX;
     float beaconY;
     float neededHeading;
     
+    //Set up beaconX, beaconY
+    switch (num) {
+        case 1:
+        {
+            beaconX = beacon1X;
+            beaconY = beacon1Y;
+            break;
+        }
+        case 2:
+        {
+            beaconX = beacon2X;
+            beaconY = beacon2Y;
+            break;
+        }
+        case 3:
+        {
+            beaconX = beacon3X;
+            beaconY = beacon3Y;
+            break;
+        }
+        case 4:
+        {
+            beaconX = beacon4X;
+            beaconY = beacon4Y;
+            break;
+        }
+        default:
+            break;
+    }
+    
     //Calculate the x distance between user and beacon
-    float xDistance = fabsf(userX - beaconX);
+    float xDistance;
+    if (userX > beaconX)
+        xDistance = fabsf(userX - beaconX);
+    else
+        xDistance = fabsf(beaconX - userX);
     
     //Calculate the y distance from user and beacon
-    float yDistance = fabsf(userY - beaconY);
+    float yDistance;
+    if (userY > beaconY)
+        yDistance = fabsf(userY - beaconY);
+    else
+        yDistance = fabsf(beaconY - userY);
     
     //Calculate the hypotenuse
-    float calcSquares = xDistance * xDistance + yDistance + yDistance;
+    float calcSquares = xDistance * xDistance + yDistance * yDistance;
     float hypotenuse = sqrtf(calcSquares);
     
     //Calculate the angle in the triangle use angle = arcsin(opposite/hypotenuse)
@@ -104,7 +153,10 @@
     {
         oppositeSide = yDistance;
     }
-    float angleOfTriangle = asinf(oppositeSide/hypotenuse);
+    float angleOfTriangleRad = asinf(oppositeSide/hypotenuse);
+    float angleOfTriangleDegrees = angleOfTriangleRad * 57.2957795;
+    //Take the complementary angle
+    float angleOfTriangle = 90 - angleOfTriangleDegrees;
     
     //Calculate the needed headings
     if (userX < beaconX && userY < beaconY)
@@ -124,10 +176,10 @@
         neededHeading = 360 - angleOfTriangle;
     }
     //Edge cases: userX == beaconX and/or userX == beaconY; ignore for now (beacons change so often you probably wouldn't be exactly equal ever
-    
     //Final step: test if they match!!! (TODO: or are close)
-    if (neededHeading == [givenHeading trueHeading])
+    if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
     {
+        NSLog(@"algorithm returned true for beacon %i", num);
         return true;
     }
     return false;

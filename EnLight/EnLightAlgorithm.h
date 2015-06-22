@@ -12,5 +12,5 @@
 @interface EnLightAlgorithm : NSObject
 
 - (void)setBeaconCoordinates;
-- (BOOL)matchedNeededHeading:(CLHeading *)givenHeading withCoordinates:(NSArray *)passedUser;
+- (BOOL)matchedNeededHeading:(float)givenHeading withCoordinates:(NSArray *)passedUser;
 @end
