@@ -28,5 +28,6 @@
 
 //Beacons
 + (NSDictionary *)beaconMapping;
++ (NSArray *)beaconRoleList;
 
 @end
