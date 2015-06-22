@@ -36,14 +36,45 @@
                         <viewControllerLayoutGuide type="bottom" id="Ttl-YU-QG7"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="da4-Qu-S1D">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p87-cz-H8C">
+                                <rect key="frame" x="82" y="177" width="211" height="314"/>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.50196081399917603" alpha="1" colorSpace="calibratedRGB"/>
+                            </view>
+                            <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZJg-Rv-y23">
+                                <rect key="frame" x="172" y="473" width="30" height="38"/>
+                                <state key="normal" image="beaconBlueberrySmall.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XCp-r9-4ML">
+                                <rect key="frame" x="64" y="315" width="30" height="38"/>
+                                <state key="normal" image="beaconBlueberrySmall.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pwD-hs-n80">
+                                <rect key="frame" x="281" y="315" width="30" height="38"/>
+                                <state key="normal" image="beaconBlueberrySmall.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gEB-4e-C43">
+                                <rect key="frame" x="172" y="154" width="30" height="38"/>
+                                <state key="normal" image="beaconBlueberrySmall.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="0.80000001192092896" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Sv-AJ-jOb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1929" y="1424"/>
+            <point key="canvasLocation" x="1928.5" y="1423.5"/>
         </scene>
         <!--Page2 View Controller-->
         <scene sceneID="FJD-Gn-gj3">
@@ -166,4 +197,7 @@
             <point key="canvasLocation" x="1117" y="635"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="beaconBlueberrySmall.png" width="42" height="63"/>
+    </resources>
 </document>

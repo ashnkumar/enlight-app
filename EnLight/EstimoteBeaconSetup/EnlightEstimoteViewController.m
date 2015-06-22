@@ -10,6 +10,7 @@
 
 #import "ESTIndoorLocationManager.h"
 #import "ESTConfig.h"
+#import "ESTLocationBuilder.h"
 
 #define TLEstimoteAppID @"enlight"
 #define TLEstimoteAppToken @"0bc9e8569d2de758ce7700942af03190"
@@ -72,12 +73,16 @@
 // For testing
 - (void)loadLocationsFromJSON
 {
-    
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"ashwinLocation" ofType:@"json"];
+    NSString *content = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    ESTLocation *location = [ESTLocationBuilder parseFromJSON:content];
+    NSLog(@"Location is: %@", location);
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
+    
 }
 
 @end

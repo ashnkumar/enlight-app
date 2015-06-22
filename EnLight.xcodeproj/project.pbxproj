@@ -49,6 +49,7 @@
 		42A29EC01B37635D008BB9D4 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42A29EBF1B37635D008BB9D4 /* MediaPlayer.framework */; };
 		42A29EC21B37636A008BB9D4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42A29EC11B37636A008BB9D4 /* MessageUI.framework */; };
 		42A29EC61B376513008BB9D4 /* EnlightEstimoteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A29EC51B376513008BB9D4 /* EnlightEstimoteViewController.m */; };
+		42A29EC81B379617008BB9D4 /* ashwinLocation.json in Resources */ = {isa = PBXBuildFile; fileRef = 42A29EC71B379617008BB9D4 /* ashwinLocation.json */; };
 		C10C540A1B367472001CC7BF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C10C54091B367472001CC7BF /* CoreLocation.framework */; };
 		C17D74D81B373EBF007F0041 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C17D74D61B373EBF007F0041 /* LaunchScreen.xib */; };
 		C17D74DB1B3754D0007F0041 /* EnLightAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = C17D74DA1B3754D0007F0041 /* EnLightAlgorithm.m */; };
@@ -203,6 +204,7 @@
 		42A29EC11B37636A008BB9D4 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		42A29EC41B376513008BB9D4 /* EnlightEstimoteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EnlightEstimoteViewController.h; path = EstimoteBeaconSetup/EnlightEstimoteViewController.h; sourceTree = "<group>"; };
 		42A29EC51B376513008BB9D4 /* EnlightEstimoteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EnlightEstimoteViewController.m; path = EstimoteBeaconSetup/EnlightEstimoteViewController.m; sourceTree = "<group>"; };
+		42A29EC71B379617008BB9D4 /* ashwinLocation.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ashwinLocation.json; sourceTree = "<group>"; };
 		C10C54091B367472001CC7BF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		C17D74D71B373EBF007F0041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = EnLight/Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		C17D74D91B3754D0007F0041 /* EnLightAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnLightAlgorithm.h; sourceTree = "<group>"; };
@@ -548,6 +550,7 @@
 				C1FE69ED1B3636CB00B52F87 /* Fonts */,
 				C1FE69B11B362D9D00B52F87 /* Info.plist */,
 				C1FE69B21B362D9D00B52F87 /* main.m */,
+				42A29EC71B379617008BB9D4 /* ashwinLocation.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -764,6 +767,7 @@
 				42A29EA11B3762FE008BB9D4 /* beacon_grey@2x.png in Resources */,
 				42A29EA41B3762FE008BB9D4 /* beaconBlueberrySmall@2x.png in Resources */,
 				42A29E9F1B3762FE008BB9D4 /* 8b_first_frame@2x.png in Resources */,
+				42A29EC81B379617008BB9D4 /* ashwinLocation.json in Resources */,
 				42A29E981B3762FE008BB9D4 /* 5b.mov in Resources */,
 				42A29EA31B3762FE008BB9D4 /* beaconBlueberrySmall.png in Resources */,
 				C1FE69E31B3636C200B52F87 /* OpenSans-Semibold.ttf in Resources */,
