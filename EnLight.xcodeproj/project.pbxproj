@@ -48,6 +48,7 @@
 		42A29EBE1B376353008BB9D4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42A29EBD1B376353008BB9D4 /* AVFoundation.framework */; };
 		42A29EC01B37635D008BB9D4 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42A29EBF1B37635D008BB9D4 /* MediaPlayer.framework */; };
 		42A29EC21B37636A008BB9D4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42A29EC11B37636A008BB9D4 /* MessageUI.framework */; };
+		42A29EC61B376513008BB9D4 /* EnlightEstimoteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A29EC51B376513008BB9D4 /* EnlightEstimoteViewController.m */; };
 		C10C540A1B367472001CC7BF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C10C54091B367472001CC7BF /* CoreLocation.framework */; };
 		C17D74D81B373EBF007F0041 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C17D74D61B373EBF007F0041 /* LaunchScreen.xib */; };
 		C17D74DB1B3754D0007F0041 /* EnLightAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = C17D74DA1B3754D0007F0041 /* EnLightAlgorithm.m */; };
@@ -200,6 +201,8 @@
 		42A29EBD1B376353008BB9D4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		42A29EBF1B37635D008BB9D4 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		42A29EC11B37636A008BB9D4 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		42A29EC41B376513008BB9D4 /* EnlightEstimoteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EnlightEstimoteViewController.h; path = EstimoteBeaconSetup/EnlightEstimoteViewController.h; sourceTree = "<group>"; };
+		42A29EC51B376513008BB9D4 /* EnlightEstimoteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EnlightEstimoteViewController.m; path = EstimoteBeaconSetup/EnlightEstimoteViewController.m; sourceTree = "<group>"; };
 		C10C54091B367472001CC7BF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		C17D74D71B373EBF007F0041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = EnLight/Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		C17D74D91B3754D0007F0041 /* EnLightAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnLightAlgorithm.h; sourceTree = "<group>"; };
@@ -433,6 +436,15 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		42A29EC31B3764CD008BB9D4 /* EstimoteBeaconSetup */ = {
+			isa = PBXGroup;
+			children = (
+				42A29EC41B376513008BB9D4 /* EnlightEstimoteViewController.h */,
+				42A29EC51B376513008BB9D4 /* EnlightEstimoteViewController.m */,
+			);
+			name = EstimoteBeaconSetup;
+			sourceTree = "<group>";
+		};
 		C17D74DC1B3754DB007F0041 /* Algorithm */ = {
 			isa = PBXGroup;
 			children = (
@@ -509,6 +521,7 @@
 		C1FE69AF1B362D9C00B52F87 /* EnLight */ = {
 			isa = PBXGroup;
 			children = (
+				42A29EC31B3764CD008BB9D4 /* EstimoteBeaconSetup */,
 				C17D74DC1B3754DB007F0041 /* Algorithm */,
 				C1FE69F91B36438700B52F87 /* Page1 */,
 				C1FE69F81B36437D00B52F87 /* Page2 */,
@@ -790,6 +803,7 @@
 			files = (
 				C1FE69B61B362D9D00B52F87 /* AppDelegate.m in Sources */,
 				C1FE69F01B363C0100B52F87 /* EnLightButton.m in Sources */,
+				42A29EC61B376513008BB9D4 /* EnlightEstimoteViewController.m in Sources */,
 				C1C6B03E1B37164F0018710F /* BeaconObject.m in Sources */,
 				C17D74DB1B3754D0007F0041 /* EnLightAlgorithm.m in Sources */,
 				C1FE69B31B362D9D00B52F87 /* main.m in Sources */,

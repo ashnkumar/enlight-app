@@ -15,6 +15,8 @@
 #define halfOfScreenHeight [[UIScreen mainScreen] bounds].size.height/2
 #define lightFont @"OpenSans-Light"
 
+#define estimoteSetupSegue @"estimoteSetupSegue"
+
 @interface ViewController ()
 @end
 
@@ -60,7 +62,8 @@
 
 - (void)nextButtonPressed
 {
-    [self performSegueWithIdentifier:@"toPage2" sender:self];
+    [self performSegueWithIdentifier:estimoteSetupSegue sender:self];
+//    [self performSegueWithIdentifier:@"toPage2" sender:self];
 }
 
 - (void)didReceiveMemoryWarning {
