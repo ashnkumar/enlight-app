@@ -12,6 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "ESTIndoorLocationManager.h"
 #import "ESTPositionView.h"
+#import "EnLightAlgorithm.h"
 
 
 #define screenWidth [[UIScreen mainScreen] bounds].size.width
@@ -41,6 +42,9 @@
 @property (nonatomic, strong) ESTPositionView *positionView;
 @property (nonatomic, assign) CGPoint currentUserCoordinate;
 @property (weak, nonatomic) IBOutlet UILabel *positionLabel;
+@property (strong, nonatomic) EnLightAlgorithm *algoHelper;
+@property (weak, nonatomic) IBOutlet UILabel *foundBeaconLabel;
+
 @end
 
 @implementation WandViewController
@@ -49,6 +53,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [AppConstants enLightBlue];
+    self.algoHelper = [[EnLightAlgorithm alloc] init];
     
     [self setupIndoorNavStuff];
 
@@ -84,7 +89,6 @@
 {
     self.manager = [[ESTIndoorLocationManager alloc] init];
     self.manager.delegate = self;
-
 }
 
 - (void)removeWelcomeLabel
@@ -148,7 +152,7 @@
 
 - (void)addEstimotePositionView
 {
-    NSLog(@"frame: %@", NSStringFromCGRect(self.indoorLocationView.frame));
+//    NSLog(@"frame: %@", NSStringFromCGRect(self.indoorLocationView.frame));
 //    self.positionView = [[ESTPositionView alloc] initWithImage:[UIImage imageNamed:@"navigation_guy"] location:self.location forViewWithBounds:self.indoorLocationView.bounds];
     self.positionView = [[ESTPositionView alloc] init];
     self.indoorLocationView.positionView = self.positionView;
@@ -258,7 +262,7 @@
                                position.y,
                                position.orientation];
     
-    
+    self.currentUserCoordinate = CGPointMake(position.x, position.y);
     
     [self.positionView updateAccuracy:positionAccuracy];
     [self.indoorLocationView updatePosition:position];
@@ -325,8 +329,21 @@
     [self.locationManager stopUpdatingLocation];
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
+- (void)locationManager:(CLLocationManager *)manager
+       didUpdateHeading:(CLHeading *)newHeading
 {
+    if (self.currentUserCoordinate.x && self.currentUserCoordinate.y) {
+        double headingToSend = newHeading.trueHeading;
+        NSString *returnedBeaconColor = [self.algoHelper beaconMatchingHeading:headingToSend withCoordinates:self.currentUserCoordinate];
+        if (returnedBeaconColor) {
+            self.foundBeaconLabel.text = returnedBeaconColor;
+        }
+        
+        else {
+            self.foundBeaconLabel.text = @"";
+        }
+    }
+    
     if (!self.firstFlag)
     {
         //grab the heading (in degrees)

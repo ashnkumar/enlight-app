@@ -16,6 +16,7 @@
 #import "BeaconObject.h"
 #import "WandViewController.h"
 
+
 #define TLEstimoteAppID @"enlight"
 #define TLEstimoteAppToken @"0bc9e8569d2de758ce7700942af03190"
 const float beaconButtonImageWidth = 30.0;
@@ -47,6 +48,7 @@ const float beaconButtonImageHeight = 38.0;
 @property (strong, nonatomic) ESTLocation *myLocation;
 @property (weak, nonatomic) IBOutlet UIButton *doneButton;
 @property (weak, nonatomic) IBOutlet UILabel *pleaseSelectRolesLabel;
+
 
 @end
 
@@ -98,6 +100,7 @@ const float beaconButtonImageHeight = 38.0;
                 [alertView show];
                 
                 NSLog(@"We got a location: %@", location);
+                
 //                self.myLocation = location;
 //                [self mapBeaconsOnScreenWithLocation:(ESTLocation *)location];
             }
@@ -111,8 +114,6 @@ const float beaconButtonImageHeight = 38.0;
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:nextVC];
     [self presentViewController:navController animated:YES completion:nil];
-    
-    
 }
 
 // For testing
@@ -294,12 +295,10 @@ const float beaconButtonImageHeight = 38.0;
     [self performSegueWithIdentifier:@"wandSegue" sender:self];
 }
 
-
 - (float)lengthOfSegmentWithPoint1:(CGPoint)point1
                             point2:(CGPoint)point2
 {
     CGFloat distance = hypotf(point1.x - point2.x, point1.y - point2.y);
-
     return distance;
 }
 
@@ -315,8 +314,6 @@ const float beaconButtonImageHeight = 38.0;
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    
-    
 }
 
 @end

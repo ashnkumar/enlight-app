@@ -37,7 +37,8 @@
     return self;
 }
 
-- (NSString *)beaconMatchingHeading:(float)givenHeading withCoordinates:(CGPoint)userCoordinates
+- (NSString *)beaconMatchingHeading:(float)givenHeading
+                    withCoordinates:(CGPoint)userCoordinates
 {
     if (userCoordinates.x && userCoordinates.y)
     {
@@ -58,7 +59,10 @@
                 *stop = YES;
             }
         }];
+        
+        return returnedBeaconColor;
     }
+    
     else
     {
         NSLog(@"passed user in algorithm was not passed correctly");
