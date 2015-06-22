@@ -111,15 +111,20 @@ const float beaconButtonImageHeight = 38.0;
         float beaconPercentFromPoint1OfWall = lengthFromPoint1OfWallToBeacon / lengthOfRelevantWall;
         NSLog(@"percent: %.4f", beaconPercentFromPoint1OfWall);
         
+        NSString *beaconMacAddress = beacon.macAddress;
+        NSArray *beaconArr = [[AppConstants beaconMapping] objectForKey:beaconMacAddress];
+        UIImage *beaconBackgroundImage = [UIImage imageNamed:beaconArr[2]];
+        
         switch (idx) {
             case 0: {
                 float bottomLeftX = roomView.frame.origin.x;
                 float bottomRightX = roomView.frame.origin.x + roomView.frame.size.width;
                 float beaconXPosition = bottomLeftX + ((bottomRightX - bottomLeftX)*beaconPercentFromPoint1OfWall);
                 float beaconYPosition = roomView.frame.origin.y + roomView.frame.size.height;
-                UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
-                newView.backgroundColor = [UIColor greenColor];
-                [self.view addSubview:newView];
+                self.beacon1Button = [[UIButton alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
+                [self.beacon1Button setImage:beaconBackgroundImage forState:UIControlStateNormal];
+                [self.view addSubview:self.beacon1Button];
+                
                 break;
             }
                 
@@ -128,9 +133,9 @@ const float beaconButtonImageHeight = 38.0;
                 float topRightY = roomView.frame.origin.y;
                 float beaconYPosition = bottomRightY - ((bottomRightY - topRightY) * beaconPercentFromPoint1OfWall);
                 float beaconXPosition = roomView.frame.origin.x + roomView.frame.size.width;
-                UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
-                newView.backgroundColor = [UIColor blueColor];
-                [self.view addSubview:newView];
+                self.beacon2Button = [[UIButton alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
+                [self.beacon2Button setImage:beaconBackgroundImage forState:UIControlStateNormal];
+                [self.view addSubview:self.beacon2Button];
                 break;
             }
                 
@@ -139,9 +144,9 @@ const float beaconButtonImageHeight = 38.0;
                 float topRightX = roomView.frame.origin.x + roomView.frame.size.width;
                 float beaconXPosition = topRightX - ((topRightX - topLeftX) * beaconPercentFromPoint1OfWall);
                 float beaconYPosition = roomView.frame.origin.y;
-                UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
-                newView.backgroundColor = [UIColor grayColor];
-                [self.view addSubview:newView];
+                self.beacon3Button = [[UIButton alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
+                [self.beacon3Button setImage:beaconBackgroundImage forState:UIControlStateNormal];
+                [self.view addSubview:self.beacon3Button];
                 break;
             }
 
@@ -151,9 +156,9 @@ const float beaconButtonImageHeight = 38.0;
                 float bottomLeftY = roomView.frame.origin.y + roomView.frame.size.height;
                 float beaconYPosition = topLeftY + ((bottomLeftY-topLeftY)*beaconPercentFromPoint1OfWall);
                 float beaconXPosition = roomView.frame.origin.x;
-                UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
-                newView.backgroundColor = [UIColor purpleColor];
-                [self.view addSubview:newView];
+                self.beacon4Button = [[UIButton alloc] initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2), beaconButtonImageWidth, beaconButtonImageHeight)];
+                [self.beacon4Button setImage:beaconBackgroundImage forState:UIControlStateNormal];
+                [self.view addSubview:self.beacon4Button];
                 break;
             }
 
