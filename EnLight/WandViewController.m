@@ -10,6 +10,8 @@
 #import "EnLightButton.h"
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
+#import "ESTIndoorLocationManager.h"
+#import "ESTPositionView.h"
 
 
 #define screenWidth [[UIScreen mainScreen] bounds].size.width
@@ -18,7 +20,7 @@
 #define halfOfScreenHeight [[UIScreen mainScreen] bounds].size.height/2
 #define lightFont @"OpenSans-Light"
 
-@interface WandViewController ()
+@interface WandViewController () <ESTIndoorLocationManagerDelegate>
 
 @property (strong, nonatomic)UILabel *welcomeLabel;
 @property (strong, nonatomic)UIView *building;
@@ -32,14 +34,24 @@
 @property (assign, nonatomic) BOOL firstFlag; //Used to normalize degrees of user's caret pointer in iPhone ui
 @property (assign, nonatomic) double firstHeading;
 @property (assign, nonatomic) CLLocationDirection heading;
+
+// For showing user position
+@property (nonatomic, strong) ESTIndoorLocationManager *manager;
+@property (nonatomic, strong) ESTLocation *location;
+@property (nonatomic, strong) ESTPositionView *positionView;
+@property (nonatomic, assign) CGPoint currentUserCoordinate;
+@property (weak, nonatomic) IBOutlet UILabel *positionLabel;
 @end
 
 @implementation WandViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.view.backgroundColor = [AppConstants enLightBlue];
     
+    [self setupIndoorNavStuff];
+
     //Add the EnLight logo
     UIImageView *logoView = [[UIImageView alloc]initWithFrame:CGRectMake(halfOfScreenWidth-25, 40, 50, 50)];
     [logoView setImage:[UIImage imageNamed:@"EnLightLogo"]];
@@ -68,6 +80,13 @@
     [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(removeWelcomeLabel) userInfo:nil repeats:NO];
 }
 
+- (void)setupIndoorNavStuff
+{
+    self.manager = [[ESTIndoorLocationManager alloc] init];
+    self.manager.delegate = self;
+
+}
+
 - (void)removeWelcomeLabel
 {
     [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseIn
@@ -75,6 +94,7 @@
                          self.welcomeLabel.alpha = 0;
                      } completion:^(BOOL succeeded){
                          [self initializeBuilding];
+                         [self addEstimotePositionView];
                      }];
 }
 
@@ -107,6 +127,12 @@
     [self.descriptionLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:self.descriptionLabel];
     
+    // Get position view from Estimote
+    self.indoorLocationView = [[ESTIndoorLocationView alloc] initWithFrame:self.building.frame];
+    self.indoorLocationView.backgroundColor = [UIColor clearColor];
+    self.indoorLocationView.transform = CGAffineTransformIdentity;
+    [self.view addSubview:self.indoorLocationView];
+    
     //Prepare other stuff
     self.beaconsInDB = [[NSMutableArray alloc]init];
     self.synthesizer = [[AVSpeechSynthesizer alloc]init];
@@ -118,6 +144,16 @@
     [self.synthesizer speakUtterance:utterance];
     
     [self setUpConnections];
+}
+
+- (void)addEstimotePositionView
+{
+    NSLog(@"frame: %@", NSStringFromCGRect(self.indoorLocationView.frame));
+//    self.positionView = [[ESTPositionView alloc] initWithImage:[UIImage imageNamed:@"navigation_guy"] location:self.location forViewWithBounds:self.indoorLocationView.bounds];
+    self.positionView = [[ESTPositionView alloc] init];
+    self.indoorLocationView.positionView = self.positionView;
+    [self.indoorLocationView drawLocation:self.myLocation];
+    [self.manager startIndoorLocation:self.myLocation];
 }
 
 - (void)setUpConnections
@@ -210,6 +246,40 @@
     }
 }
 
+#pragma mark - Estimote indoor location manager
+
+- (void)indoorLocationManager:(ESTIndoorLocationManager *)manager
+            didUpdatePosition:(ESTOrientedPoint *)position
+                 withAccuracy:(ESTPositionAccuracy)positionAccuracy
+                   inLocation:(ESTLocation *)location
+{
+    self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
+                               position.x,
+                               position.y,
+                               position.orientation];
+    
+    
+    
+    [self.positionView updateAccuracy:positionAccuracy];
+    [self.indoorLocationView updatePosition:position];
+}
+
+- (void)indoorLocationManager:(ESTIndoorLocationManager *)manager didFailToUpdatePositionWithError:(NSError *)error
+{
+    self.positionView.hidden = YES;
+    self.positionLabel.hidden = NO;
+    
+    if (error.code == ESTIndoorPositionOutsideLocationError)
+    {
+        self.positionLabel.text = @"It seems you are not in this location.";
+    }
+    else if (error.code == ESTIndoorMagnetometerInitializationError)
+    {
+        self.positionLabel.text = @"It seems your magnetometer is not working.";
+    }
+    NSLog(@"%@", error.localizedDescription);
+}
+
 #pragma mark - LocationManager
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:
 (NSArray *)beacons inRegion:(CLBeaconRegion *)region {
@@ -285,6 +355,12 @@
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
     return YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self.manager stopIndoorLocation];
+    [super viewWillDisappear:animated];
 }
 
 - (void)didReceiveMemoryWarning {

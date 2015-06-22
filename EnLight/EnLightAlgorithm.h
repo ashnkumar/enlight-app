@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <UIKit/UIKit.h>
 
 @interface EnLightAlgorithm : NSObject
 
-- (void)setBeaconCoordinates;
-- (BOOL)matchedNeededHeading:(float)givenHeading withCoordinates:(NSArray *)passedUser;
+- (NSString *)beaconMatchingHeading:(float)givenHeading
+                    withCoordinates:(CGPoint)userCoordinates;
+
 @end

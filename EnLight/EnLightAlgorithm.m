@@ -7,26 +7,13 @@
 //
 
 #import "EnLightAlgorithm.h"
-#define variance 90 //Set this variance for how big to make the acceptance range IN DEGREES
+#define variance 10 //Set this variance for how big to make the acceptance range IN DEGREES
+
+@interface EnLightAlgorithm ()
+@property (nonatomic, strong) NSArray *beaconsArr;
+@end
 
 @implementation EnLightAlgorithm
-{
-    //Coordinates
-    float userX;
-    float userY;
-    
-    float beacon1X;
-    float beacon1Y;
-    
-    float beacon2X;
-    float beacon2Y;
-    
-    float beacon3X;
-    float beacon3Y;
-    
-    float beacon4X;
-    float beacon4Y;
-}
 
 - (id)init
 {
@@ -34,96 +21,60 @@
     if (self)
     {
         //Initialize the beacons
-        userX = 0;
-        userY = 0;
-        beacon1X = 0;
-        beacon2X = 0;
-        beacon3X = 0;
-        beacon4X = 0;
-        beacon1Y = 0;
-        beacon2Y = 0;
-        beacon3Y = 0;
-        beacon4Y = 0;
+        _beaconsArr = @[@{@"color": @"green",
+                          @"xCoord": @-0.6079069349184979,
+                          @"yCoord": @2.37729769708943},
+                        @{@"color": @"blue1",
+                          @"xCoord": @-0.3736770133665756,
+                          @"yCoord": @-1.900216953096876},
+                        @{@"color": @"blue2",
+                          @"xCoord": @1.104500931964482,
+                          @"yCoord": @-2.17720315598735},
+                        @{@"color": @"purple",
+                          @"xCoord": @1.410031417741905,
+                          @"yCoord": @0.7379279358198194}];
     }
     return self;
 }
 
-- (void)setBeaconCoordinates
+- (NSString *)beaconMatchingHeading:(float)givenHeading withCoordinates:(CGPoint)userCoordinates
 {
-    beacon1X = -5;
-    beacon1Y = 0;
-    
-    beacon2X = 0;
-    beacon2Y = 5;
-    
-    beacon3X = 5;
-    beacon3Y = 0;
-    
-    beacon4X = 0;
-    beacon4Y = -5;
-}
-
-- (BOOL)matchedNeededHeading:(float)givenHeading withCoordinates:(NSArray *)passedUser
-{
-    BOOL result = NO;
-    
-    if (passedUser.count == 2)
+    if (userCoordinates.x && userCoordinates.y)
     {
-        NSNumber *temp = [passedUser firstObject];
-        userX = [temp floatValue];
-        temp = [passedUser lastObject];
-        userY = [temp floatValue];
+        __block NSString *returnedBeaconColor = nil;
         
-        BOOL testIfHeadingsMatch = NO;
-        for (int i = 0; i < 4; i++)
-        {
-            testIfHeadingsMatch = [self testBeacon:i+1 withHeading:givenHeading];
-            if (testIfHeadingsMatch)
-                return true;
-        }
+        [self.beaconsArr enumerateObjectsUsingBlock:^(NSDictionary *beaconDic, NSUInteger idx, BOOL *stop) {
+            float beaconX = [beaconDic[@"xCoord"] floatValue];
+            float beaconY = [beaconDic[@"yCoord"] floatValue];
+            
+            if ([self testBeaconWithColor:beaconDic[@"color"]
+                                  beaconX:beaconX
+                                  beaconY:beaconY
+                              withHeading:givenHeading
+                                    userX:userCoordinates.x
+                                    userY:userCoordinates.y])
+            {
+                returnedBeaconColor = beaconDic[@"color"];
+                *stop = YES;
+            }
+        }];
     }
     else
     {
         NSLog(@"passed user in algorithm was not passed correctly");
+        return nil;
     }
-    return result;
+    
+    return nil;
 }
 
-- (BOOL)testBeacon:(int)num withHeading:(float)givenHeading
+- (BOOL)testBeaconWithColor:(NSString *)beaconColor
+                    beaconX:(float)beaconX beaconY:(float)beaconY
+                withHeading:(float)givenHeading
+                      userX:(float)userX
+                      userY:(float)userY
 {
-    float beaconX;
-    float beaconY;
     float neededHeading;
-    
-    //Set up beaconX, beaconY
-    switch (num) {
-        case 1:
-        {
-            beaconX = beacon1X;
-            beaconY = beacon1Y;
-            break;
-        }
-        case 2:
-        {
-            beaconX = beacon2X;
-            beaconY = beacon2Y;
-            break;
-        }
-        case 3:
-        {
-            beaconX = beacon3X;
-            beaconY = beacon3Y;
-            break;
-        }
-        case 4:
-        {
-            beaconX = beacon4X;
-            beaconY = beacon4Y;
-            break;
-        }
-        default:
-            break;
-    }
     
     //Calculate the x distance between user and beacon
     float xDistance;
@@ -178,14 +129,15 @@
     }
     //Edge cases: userX == beaconX and/or userX == beaconY; ignore for now (beacons change so often you probably wouldn't be exactly equal ever
     
-    NSLog(@"for beacon %i, heading needed is: %f", num, neededHeading);
+//    NSLog(@"for beacon %i, heading needed is: %f", num, neededHeading);
     
     //Final step: test if they match!!! (TODO: or are close)
-    /*if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
+    if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
     {
-        //NSLog(@"algorithm returned true for beacon %i", num);
+//        NSLog(@"algorithm returned true for beacon %i", num);
         return true;
-    }*/
+    }
+    
     return false;
 }
 

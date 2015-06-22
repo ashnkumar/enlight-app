@@ -14,6 +14,7 @@
 #import "AppConstants.h"
 #import "EnLightDBManager.h"
 #import "BeaconObject.h"
+#import "WandViewController.h"
 
 #define TLEstimoteAppID @"enlight"
 #define TLEstimoteAppToken @"0bc9e8569d2de758ce7700942af03190"
@@ -57,7 +58,7 @@ const float beaconButtonImageHeight = 38.0;
     self.db = [[EnLightDBManager alloc]init];
     self.db.delegate = self;
     
-    self.doneButton.hidden = YES;
+    self.doneButton.hidden = NO;
     self.pleaseSelectRolesLabel.hidden = NO;
     
     [self authorizeEnlight];
@@ -138,6 +139,7 @@ const float beaconButtonImageHeight = 38.0;
         int relevantLineSegmentIdx = (idx > 0) ? idx-1 : 3;
         ESTOrientedLineSegment *relevantLineSegment = location.boundarySegments[relevantLineSegmentIdx];
 //        NSLog(@"Line segment: %@", relevantLineSegment);
+//        NSLog(@"Line segment length: %.2f", relevantLineSegment.length);
         
         CGPoint linePoint1 = CGPointMake(relevantLineSegment.point1.x, relevantLineSegment.point1.y);
         CGPoint linePoint2 = CGPointMake(relevantLineSegment.point2.x, relevantLineSegment.point2.y);
@@ -289,7 +291,7 @@ const float beaconButtonImageHeight = 38.0;
                                         self.beacon3Color: self.beacon3RoleLabel.text,
                                         self.beacon4Color: self.beacon4RoleLabel.text};
     [self.db setAllBeaconsWithConfig:configuredBeacons];
-    
+    [self performSegueWithIdentifier:@"wandSegue" sender:self];
 }
 
 
@@ -299,6 +301,16 @@ const float beaconButtonImageHeight = 38.0;
     CGFloat distance = hypotf(point1.x - point2.x, point1.y - point2.y);
 
     return distance;
+}
+
+#pragma mark - Other
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"wandSegue"]) {
+        WandViewController *wandViewController = (WandViewController *)segue.destinationViewController;
+        wandViewController.myLocation = self.myLocation;
+    }
 }
 
 - (void)didReceiveMemoryWarning {

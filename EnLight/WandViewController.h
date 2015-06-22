@@ -12,9 +12,14 @@
 #import "EnLightDBManager.h"
 #import "BeaconObject.h"
 #import "EnLightAlgorithm.h"
+#import "ESTLocation.h"
+#import "ESTIndoorLocationView.h"
 
 @interface WandViewController : UIViewController <CLLocationManagerDelegate, EnLightDBProtocol>
 @property (strong, nonatomic) CLLocationManager *locationManager;
+@property (strong, nonatomic) ESTLocation *myLocation;
 @property CLProximity lastProximity;
+
+@property (nonatomic, strong) ESTIndoorLocationView *indoorLocationView;
 
 @end
