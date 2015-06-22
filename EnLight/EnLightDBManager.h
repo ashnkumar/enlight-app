@@ -22,4 +22,7 @@
 //Returns an array containing objects of type BeaconObject
 - (void)getBeacons;
 
+// Sets all beacons when merchant configures them
+- (void)setAllBeaconsWithConfig:(NSDictionary *)configDictionary;
+
 @end

@@ -68,6 +68,36 @@
     }];
 }
 
+- (void)simpleSetBeaconWithColor:(NSString *)color withRole:(NSString *)role
+{
+    PFQuery *query = [PFQuery queryWithClassName:@"Beacon"];
+    [query whereKey:@"Color" equalTo:color];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            // Found
+            if ([objects count] >= 1)
+            {
+                PFObject *beacon = [objects firstObject];
+                //Capabilities currently only allow setting angle and role; udid and color should remain fixed
+                [beacon setObject:role forKey:@"Role"];
+                [beacon saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                    if (!succeeded) {
+                        NSLog(@"Error: %@", [error localizedDescription]);
+                    }
+                }];
+            }
+            else
+            {
+                NSLog(@"No baecons found with that color in database!");
+            }
+        }
+        else {
+            NSLog(@"Error reaching server");
+        }
+    }];
+    
+}
+
 - (void)getBeacons
 {
     if(!self.haveGottenBeaconsBefore)
@@ -98,4 +128,16 @@
         }];
     }
 }
+
+- (void)setAllBeaconsWithConfig:(NSDictionary *)configDictionary
+{
+    for (NSString *beaconColor in [configDictionary allKeys]) {
+        [self simpleSetBeaconWithColor:beaconColor withRole:configDictionary[beaconColor]];
+    }
+}
+
+
+
+
+
 @end
