@@ -54,6 +54,7 @@
     
     self.view.backgroundColor = [AppConstants enLightBlue];
     self.algoHelper = [[EnLightAlgorithm alloc] init];
+    self.firstFlag = NO;
     
     [self setupIndoorNavStuff];
 
@@ -280,7 +281,7 @@
     self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
                                position.x,
                                position.y,
-                               position.orientation]; //todo: replace with "the bathroom is ahead in.."
+                               position.orientation];
     
     self.currentUserCoordinate = CGPointMake(position.x, position.y);
     
@@ -425,7 +426,6 @@
         else
         {
             self.foundBeaconLabel.text = @"";
-            NSLog(@"did update heading didn't returned beacon color");
         }
     }
 }
@@ -435,7 +435,12 @@
     self.foundBeaconLabel.text = returnedBeaconColor;
     NSLog(@"did update heading returned beacon color %@", returnedBeaconColor);
     
-    //synthesizer
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:returnedBeaconColor];
+    
+    utterance.pitchMultiplier = 1.0;
+    utterance.rate = 0.1;
+    
+    [self.synthesizer speakUtterance:utterance];
     //figure out and say what the role is
 }
 

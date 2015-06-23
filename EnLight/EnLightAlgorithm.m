@@ -9,7 +9,7 @@
 #import "EnLightAlgorithm.h"
 #import "BeaconObject.h"
 
-#define variance 90 //Set this variance for how big to make the acceptance range IN DEGREES
+#define variance 1 //Set this variance for how big to make the acceptance range IN DEGREES
 
 @interface EnLightAlgorithm ()
 @end
@@ -21,11 +21,6 @@
     self = [super init];
     if (self)
     {
-        // [AK] =============================================================
-        // @TODO: This needs to come from Parse; I'm using dummy data
-        // (from the ashwinLocation.json file). It corresponds to the actual
-        // beacons I had from when I really did map the room
-        // [AK] =============================================================
     }
     return self;
 }
@@ -33,15 +28,13 @@
 - (NSString *)beaconMatchingHeading:(float)givenHeading
                     withCoordinates:(CGPoint)userCoordinates withBeacons:(NSArray *)beaconsArray
 {
-    NSLog(@"inside beaconMatchingHEad");
     if (userCoordinates.x && userCoordinates.y)
     {
         __block NSString *returnedBeaconColor = nil;
         
         for (BeaconObject *beacon in beaconsArray)
         {
-            NSLog(@"inside for loop beaconobjects beaconmatchingheading");
-            float beaconX = [beacon.x floatValue];
+           float beaconX = [beacon.x floatValue];
             float beaconY = [beacon.y floatValue];
             if ([self testBeaconWithColor:beacon.color
                                   beaconX:beaconX
@@ -50,7 +43,9 @@
                                     userX:userCoordinates.x
                                     userY:userCoordinates.y])
             {
+               // NSLog(@"beacon returned %@ color", beacon.color);
                 returnedBeaconColor = beacon.color;
+                return returnedBeaconColor;
             }
         }
         
@@ -69,8 +64,6 @@
                 *stop = YES;
             }
         }];*/
-        
-        return returnedBeaconColor;
     }
     
     else
@@ -143,6 +136,8 @@
         neededHeading = 360 - angleOfTriangle;
     }
     //Edge cases: userX == beaconX and/or userX == beaconY; ignore for now (beacons change so often you probably wouldn't be exactly equal ever
+
+    NSLog(@"testing beacon color: %@, given heading %f, neededheading: %f", beaconColor, givenHeading, neededHeading);
     
     if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
     {

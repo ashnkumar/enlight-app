@@ -177,7 +177,6 @@ const float beaconButtonImageHeight = 38.0;
     }
     
     else {
-        NSLog(@"We got my location: %@", self.myLocation);
         [self.db getBeacons];
     }
 
@@ -207,8 +206,6 @@ const float beaconButtonImageHeight = 38.0;
                 
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Done" message:[NSString stringWithFormat:@"%@", location] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alertView show];
-                
-                NSLog(@"We got a location: %@", location);
                 
                 self.myLocation = location;
                 

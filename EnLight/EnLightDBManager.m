@@ -18,6 +18,7 @@
     if (self)
     {
         [Parse setApplicationId:@"7DkEQSadS72xNwLNDhgcoOcrMBFucw8IXpeygeDs" clientKey:@"HFEpgKUUtJvoG9rwjM2PLXurZkw2u1L8hcP8YKPf"];
+        self.haveGottenBeaconsBefore = NO;
     }
     return self;
 }
@@ -42,7 +43,7 @@
             }
             else
             {
-                NSLog(@"DB returned 0 or more than 1 object");
+                NSLog(@"Error: DB returned 0 or more than 1 object");
             }
 
         }
@@ -71,7 +72,7 @@
             if ([objects count] >= 1)
             {
                 PFObject *beacon = [objects firstObject];
-                //Capabilities currently only allow setting angle and role; udid and color should remain fixed
+                //Capabilities currently only allow setting role; udid and color should remain fixed
                 [beacon setObject:role forKey:@"Role"];
                 [beacon saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                     if (!succeeded) {
@@ -98,8 +99,6 @@
         self.haveGottenBeaconsBefore = YES; //Prevent multiple calls to DB just in case it's already querying in the background
         NSMutableArray *beacons = [[NSMutableArray alloc]init];
         PFQuery *query = [PFQuery queryWithClassName:@"Beacon"];
-        //TODO: insert variance in which will accept an angle as being equal
-        //[query whereKey:@"Angle" equalTo:angle];
         
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if ([objects count] > 0)
@@ -113,11 +112,12 @@
                     NSString *udid = obj[@"UDID"];
                     NSString *major = obj[@"Major"];
                     NSString *minor = obj[@"Minor"];
-                    NSString *xCoord = obj[@"X"];
-                    NSString *yCoord = obj[@"Y"];
+                    NSString *xCoord = obj[@"x"];
+                    NSString *yCoord = obj[@"y"];
                     [beaconObject setCharacteristics:macAdd withRole:role withUDID:udid withColor:color withMajor:major withMinor:minor withX:xCoord withY:yCoord];
                     [beacons addObject:beaconObject];
                 }
+                self.haveGottenBeaconsBefore = NO;
                 [self.delegate beaconsReturned:beacons];
             }
         }];
