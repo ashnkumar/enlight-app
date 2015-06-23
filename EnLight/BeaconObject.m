@@ -15,14 +15,16 @@
     return self;
 }
 
-- (void)setCharacteristics:(NSNumber *)a withRole:(NSString *)r withUDID:(NSString *)u withColor:(NSString *)c withMajor:(NSString *)ma withMinor:(NSString *)mi
+- (void)setCharacteristics:(NSString *)macAdd withRole:(NSString *)r withUDID:(NSString *)u withColor:(NSString *)c withMajor:(NSString *)ma withMinor:(NSString *)mi withX:(NSString *)xCoord withY:(NSString *)yCoord
 {
-    self.angle = a;
+    self.macAdd = macAdd;
     self.role = r;
     self.udid = u;
     self.color = c;
     self.major = ma;
     self.minor = mi;
+    self.x = xCoord;
+    self.y = yCoord;
 }
 
 

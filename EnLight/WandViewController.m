@@ -41,7 +41,7 @@
 @property (nonatomic, strong) ESTLocation *location;
 @property (nonatomic, strong) ESTPositionView *positionView;
 @property (nonatomic, assign) CGPoint currentUserCoordinate;
-@property (weak, nonatomic) IBOutlet UILabel *positionLabel;
+@property (strong, nonatomic) UILabel *positionLabel;
 @property (strong, nonatomic) EnLightAlgorithm *algoHelper;
 @property (weak, nonatomic) IBOutlet UILabel *foundBeaconLabel;
 
@@ -63,7 +63,7 @@
     
     [self.view addSubview:logoView];
 
-    //Text
+    //Description text
     float welcomeWidthStartingX = screenWidth * 0.75 / 2;
     self.welcomeLabel = [[UILabel alloc]initWithFrame:CGRectMake(halfOfScreenWidth-welcomeWidthStartingX, halfOfScreenHeight-100, welcomeWidthStartingX * 2, 200)];
     self.welcomeLabel.text = @"Your EnLight Wand is now ready for use";
@@ -73,6 +73,18 @@
     [self.welcomeLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:self.welcomeLabel];
     
+    //Position Label
+    int positionLabelWidth = screenWidth *.85;
+    int positionLabelHeight = 50;
+    self.positionLabel = [[UILabel alloc]initWithFrame:CGRectMake(halfOfScreenWidth-positionLabelWidth/2, screenHeight-40-positionLabelHeight, positionLabelWidth, positionLabelHeight)];
+    self.positionLabel.text = @"";
+    self.positionLabel.numberOfLines = 0;
+    self.positionLabel.textColor = [AppConstants enLightWhite];
+    [self.positionLabel setFont:[UIFont fontWithName:lightFont size:16.0]];
+    [self.positionLabel setTextAlignment:NSTextAlignmentCenter];
+    [self.view addSubview:self.positionLabel];
+
+    //Accessibility
     AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Your EnLight wand is now ready for use"];
     
     utterance.pitchMultiplier = 1.0;
@@ -105,7 +117,7 @@
 - (void)initializeBuilding
 {
     //Display the square building, 75% of screen's width
-    float buildingSize = screenWidth * 0.75;
+    /*float buildingSize = screenWidth * 0.75;
     float halfBuildingSize = buildingSize/2;
     self.building = [[UIView alloc]initWithFrame:CGRectMake(screenWidth/2-halfBuildingSize, screenHeight/2-halfBuildingSize, buildingSize, buildingSize)];
     self.building.layer.borderColor = [AppConstants enLightWhite].CGColor;
@@ -123,13 +135,22 @@
     //Insert text of what beacon you're looking at
     float descriptLabelStartingX = self.building.frame.origin.x;
     float descriptLabelStartingY = self.building.frame.origin.y + self.building.frame.size.height + 20;
-    self.descriptionLabel = [[UILabel alloc]initWithFrame:CGRectMake(descriptLabelStartingX, descriptLabelStartingY, self.building.frame.size.width, 20)];
-    self.descriptionLabel.text = @"Scanning the area...";
+    self.descriptionLabel = [[UILabel alloc]initWithFrame:CGRectMake(descriptLabelStartingX, descriptLabelStartingY, self.building.frame.size.width, 30)];
+    self.descriptionLabel.text = @""; //"Scanning the area" if no beacons are found
     self.descriptionLabel.numberOfLines = 0;
     self.descriptionLabel.textColor = [AppConstants enLightWhite];
     [self.descriptionLabel setFont:[UIFont fontWithName:lightFont size:20.0]];
     [self.descriptionLabel setTextAlignment:NSTextAlignmentCenter];
-    [self.view addSubview:self.descriptionLabel];
+    [self.view addSubview:self.descriptionLabel];*/
+    
+    //Instead, draw a caret that takes up most of the space
+    float userHeight = screenWidth * .6;
+    float userWidth = screenWidth * .6 * 2 / 3; //Make the dimensions of ratio 2x3
+    float userOriginX = screenWidth/2-userWidth/2;
+    float userOriginY = screenHeight/2-userHeight/2;
+    self.user = [[UIImageView alloc]initWithFrame:CGRectMake(userOriginX, userOriginY, userWidth, userHeight)];
+    [self.user setImage:[UIImage imageNamed:@"User"]];
+    [self.view addSubview:self.user];
     
     // [AK] =============================================================
     //      This is where we get the indoor view to display to the user
@@ -139,10 +160,10 @@
     //      basic version without the indoor view
     // [AK] =============================================================
     // Get position view from Estimote
-    self.indoorLocationView = [[ESTIndoorLocationView alloc] initWithFrame:self.building.frame];
+    /*self.indoorLocationView = [[ESTIndoorLocationView alloc] initWithFrame:self.building.frame];
     self.indoorLocationView.backgroundColor = [UIColor clearColor];
     self.indoorLocationView.transform = CGAffineTransformIdentity;
-    [self.view addSubview:self.indoorLocationView];
+    [self.view addSubview:self.indoorLocationView];*/
     
     //Prepare other stuff
     self.beaconsInDB = [[NSMutableArray alloc]init];
@@ -161,7 +182,7 @@
 {
 //    self.positionView = [[ESTPositionView alloc] initWithImage:[UIImage imageNamed:@"navigation_guy"] location:self.location forViewWithBounds:self.indoorLocationView.bounds];
 //    self.indoorLocationView.positionView = self.positionView;
-    [self.indoorLocationView drawLocation:self.myLocation];
+ //   [self.indoorLocationView drawLocation:self.myLocation]; //Cat commented this so doesn't draw the estimote beacons (positioning was off once I removed the building rectangle)
     [self.manager startIndoorLocation:self.myLocation];
 }
 
@@ -200,13 +221,7 @@
 }
 
 #pragma mark - normal stuff
-- (void)beaconsReturned:(NSMutableArray *)beacons
-{
-    self.beaconsInDB = beacons;
-    [self sonarBoomWithHeading];
-}
-
-- (void)sonarBoomWithHeading
+/*- (void)sonarBoomWithHeading
 {
     if (self.beaconsInDB.count > 0)
     {
@@ -253,7 +268,7 @@
             }
         }
     }
-}
+}*/
 
 #pragma mark - Estimote indoor location manager
 
@@ -265,7 +280,7 @@
     self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
                                position.x,
                                position.y,
-                               position.orientation];
+                               position.orientation]; //todo: replace with "the bathroom is ahead in.."
     
     self.currentUserCoordinate = CGPointMake(position.x, position.y);
     
@@ -280,11 +295,17 @@
     
     if (error.code == ESTIndoorPositionOutsideLocationError)
     {
-        self.positionLabel.text = @"It seems you are not in this location.";
+        self.positionLabel.text = @"There was an error getting your location.";
     }
     else if (error.code == ESTIndoorMagnetometerInitializationError)
     {
         self.positionLabel.text = @"It seems your magnetometer is not working.";
+        AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"It seems your magnetometer isn't working."];
+        
+        utterance.pitchMultiplier = 1.0;
+        utterance.rate = 0.1;
+        
+        [self.synthesizer speakUtterance:utterance];
     }
     NSLog(@"%@", error.localizedDescription);
 }
@@ -294,7 +315,7 @@
 (NSArray *)beacons inRegion:(CLBeaconRegion *)region {
     
     self.beaconsFound = beacons;
-    NSString *message = @"";
+    /*NSString *message = @"";
     
     if(beacons.count > 0) {
         CLBeacon *nearestBeacon = beacons.firstObject;
@@ -319,7 +340,11 @@
         }
     } else {
         message = @"No beacons are nearby";
-    }
+    }*/ //Not used
+}
+
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
+    return YES;
 }
 
 -(void)locationManager:(CLLocationManager *)manager
@@ -337,35 +362,6 @@
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
-    if (self.currentUserCoordinate.x && self.currentUserCoordinate.y) {
-        
-        double headingToSend = newHeading.trueHeading;
-        
-        // [AK] =============================================================
-        //      This is where the magic happens, I am checking whenever the
-        //      user's heading changes, if they are looking at a beacon
-        //      and displaying that beacon to the user
-        
-        //      @TODO: We need to have the speech synthesizer speak out the
-        //      ROLE of the beacon (right now it just displays the color,
-        //      so we need to get the beaconMapping from parse somewhere and
-        //      figure out what role that color corresponds to (you can add
-        //      that role checking in the algorithm or elsewhere, doesn't
-        //      need to be done here)
-        
-        // [AK] =============================================================
-        
-        NSString *returnedBeaconColor = [self.algoHelper beaconMatchingHeading:headingToSend withCoordinates:self.currentUserCoordinate];
-        
-        if (returnedBeaconColor) {
-            self.foundBeaconLabel.text = returnedBeaconColor;
-        }
-        
-        else {
-            self.foundBeaconLabel.text = @"";
-        }
-    }
-    
     if (!self.firstFlag)
     {
         //grab the heading (in degrees)
@@ -387,12 +383,60 @@
     }
     else
     {
-        [self sonarBoomWithHeading];
+        [self testBeacons];
     }
 }
 
-- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
-    return YES;
+#pragma mark - beacon managing
+- (void)beaconsReturned:(NSMutableArray *)beacons
+{
+    self.beaconsInDB = beacons;
+    [self testBeacons];
+}
+
+- (void) testBeacons
+{
+    if (self.currentUserCoordinate.x && self.currentUserCoordinate.y && [self.beaconsInDB count] > 0)
+    {
+        double headingToSend = self.heading;
+        
+        // [AK] =============================================================
+        //      This is where the magic happens, I am checking whenever the
+        //      user's heading changes, if they are looking at a beacon
+        //      and displaying that beacon to the user
+        
+        //      @TODO: We need to have the speech synthesizer speak out the
+        //      ROLE of the beacon (right now it just displays the color,
+        //      so we need to get the beaconMapping from parse somewhere and
+        //      figure out what role that color corresponds to (you can add
+        //      that role checking in the algorithm or elsewhere, doesn't
+        //      need to be done here)
+        
+        // [AK] =============================================================
+        
+        
+        NSString *returnedBeaconColor = [self.algoHelper beaconMatchingHeading:headingToSend withCoordinates:self.currentUserCoordinate withBeacons:self.beaconsInDB];
+        
+        if (returnedBeaconColor)
+        {
+            [self displayFoundBeacons:returnedBeaconColor];
+        }
+        
+        else
+        {
+            self.foundBeaconLabel.text = @"";
+            NSLog(@"did update heading didn't returned beacon color");
+        }
+    }
+}
+
+- (void)displayFoundBeacons:(NSString *)returnedBeaconColor
+{
+    self.foundBeaconLabel.text = returnedBeaconColor;
+    NSLog(@"did update heading returned beacon color %@", returnedBeaconColor);
+    
+    //synthesizer
+    //figure out and say what the role is
 }
 
 - (void)viewWillDisappear:(BOOL)animated

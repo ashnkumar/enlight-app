@@ -10,9 +10,10 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 
+
 @interface EnLightAlgorithm : NSObject
 
 - (NSString *)beaconMatchingHeading:(float)givenHeading
-                    withCoordinates:(CGPoint)userCoordinates;
+                    withCoordinates:(CGPoint)userCoordinates withBeacons:(NSArray *)beaconsArray;
 
 @end

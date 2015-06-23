@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "EnLightButton.h"
+#import <AVFoundation/AVFoundation.h>
 
 #define screenWidth [[UIScreen mainScreen] bounds].size.width
 #define screenHeight [[UIScreen mainScreen] bounds].size.height
@@ -18,6 +19,8 @@
 #define estimoteSetupSegue @"estimoteSetupSegue"
 
 @interface ViewController ()
+@property (strong, nonatomic) AVSpeechSynthesizer *synthesizer;
+
 @end
 
 @implementation ViewController
@@ -51,13 +54,20 @@
     [nextButton addTarget:self action:@selector(nextButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:nextButton];
     
-    UILabel *subscriptLabel = [[UILabel alloc]initWithFrame:CGRectMake(10, screenHeight-50, screenWidth-20, 50)];
-    subscriptLabel.text = @"For testing purposes of this hackathon, we have combined the merchant’s beacon configuration app and consumer app into one.  This sample app works best in a single room, as additional beacons are required to accommodate an entire building.";
+    UILabel *subscriptLabel = [[UILabel alloc]initWithFrame:CGRectMake(10, screenHeight-80-10, screenWidth-20, 80)];
+    subscriptLabel.text = @"For testing purposes, we've combined the merchant’s beacon configuration app and consumer app into one.  This test version works best in a single room.";
     subscriptLabel.numberOfLines = 0;
     [subscriptLabel setFont:[UIFont fontWithName:lightFont size:14.0]];
     [subscriptLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:subscriptLabel];
     
+    /*self.synthesizer = [[AVSpeechSynthesizer alloc]init];
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Welcome! Let's set up your beacons. For testing purposes, we have combined the merchant’s beacon configuration app and consumer app into one.  This test version works best in a single room as additional beacons are needed to accommodate an entire building."];
+    
+    utterance.pitchMultiplier = 1.0;
+    utterance.rate = 0.1;
+    
+    [self.synthesizer speakUtterance:utterance];*///Remove
 }
 
 - (void)nextButtonPressed

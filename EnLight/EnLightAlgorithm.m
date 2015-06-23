@@ -7,10 +7,11 @@
 //
 
 #import "EnLightAlgorithm.h"
-#define variance 10 //Set this variance for how big to make the acceptance range IN DEGREES
+#import "BeaconObject.h"
+
+#define variance 90 //Set this variance for how big to make the acceptance range IN DEGREES
 
 @interface EnLightAlgorithm ()
-@property (nonatomic, strong) NSArray *beaconsArr;
 @end
 
 @implementation EnLightAlgorithm
@@ -25,31 +26,35 @@
         // (from the ashwinLocation.json file). It corresponds to the actual
         // beacons I had from when I really did map the room
         // [AK] =============================================================
-        
-        _beaconsArr = @[@{@"color": @"green",
-                          @"xCoord": @-0.6079069349184979,
-                          @"yCoord": @2.37729769708943},
-                        @{@"color": @"blue1",
-                          @"xCoord": @-0.3736770133665756,
-                          @"yCoord": @-1.900216953096876},
-                        @{@"color": @"blue2",
-                          @"xCoord": @1.104500931964482,
-                          @"yCoord": @-2.17720315598735},
-                        @{@"color": @"purple",
-                          @"xCoord": @1.410031417741905,
-                          @"yCoord": @0.7379279358198194}];
     }
     return self;
 }
 
 - (NSString *)beaconMatchingHeading:(float)givenHeading
-                    withCoordinates:(CGPoint)userCoordinates
+                    withCoordinates:(CGPoint)userCoordinates withBeacons:(NSArray *)beaconsArray
 {
+    NSLog(@"inside beaconMatchingHEad");
     if (userCoordinates.x && userCoordinates.y)
     {
         __block NSString *returnedBeaconColor = nil;
         
-        [self.beaconsArr enumerateObjectsUsingBlock:^(NSDictionary *beaconDic, NSUInteger idx, BOOL *stop) {
+        for (BeaconObject *beacon in beaconsArray)
+        {
+            NSLog(@"inside for loop beaconobjects beaconmatchingheading");
+            float beaconX = [beacon.x floatValue];
+            float beaconY = [beacon.y floatValue];
+            if ([self testBeaconWithColor:beacon.color
+                                  beaconX:beaconX
+                                  beaconY:beaconY
+                              withHeading:givenHeading
+                                    userX:userCoordinates.x
+                                    userY:userCoordinates.y])
+            {
+                returnedBeaconColor = beacon.color;
+            }
+        }
+        
+        /*[beaconsArray enumerateObjectsUsingBlock:^(NSDictionary *beaconDic, NSUInteger idx, BOOL *stop) {
             float beaconX = [beaconDic[@"xCoord"] floatValue];
             float beaconY = [beaconDic[@"yCoord"] floatValue];
             
@@ -63,7 +68,7 @@
                 returnedBeaconColor = beaconDic[@"color"];
                 *stop = YES;
             }
-        }];
+        }];*/
         
         return returnedBeaconColor;
     }

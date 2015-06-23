@@ -35,6 +35,11 @@
     return [UIColor whiteColor];
 }
 
++ (UIColor *)estimoteDarkGreen
+{
+    return [UIColor colorWithRed:106.0/255.0 green: 139.0/255.0 blue:149.0/255.0 alpha:1.0f];
+}
+
 + (float)h1FontSize
 {
     return 36.0;

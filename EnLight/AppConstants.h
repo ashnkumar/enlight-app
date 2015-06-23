@@ -17,6 +17,7 @@
 + (UIColor *)enLightLightGrey;
 + (UIColor *)enLightWhite;
 + (UIColor *)enLightOrange;
++ (UIColor *)estimoteDarkGreen;
 
 //Font Sizes
 + (float)h1FontSize;
