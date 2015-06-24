@@ -321,7 +321,7 @@ const float beaconButtonImageHeight = 38.0;
     [self.view addSubview:navbar];
     
     //Navbar's logo
-    int logoWidth = 45;
+    int logoWidth = 44;
     UIImageView *navbarLogo = [[UIImageView alloc]initWithFrame:CGRectMake(screenWidth/2-logoWidth/2, navBarHeight-10-logoWidth, logoWidth, logoWidth)];
     [navbarLogo setImage:[UIImage imageNamed:@"estimoteDarkGreenLogo"]];
     [navbar addSubview:navbarLogo];
@@ -537,6 +537,11 @@ const float beaconButtonImageHeight = 38.0;
 - (void)doneConfiguringBeacons
 {
     UIAlertView *finished = [[UIAlertView alloc]initWithTitle:@"Finished Configurations" message:@"Thank you for setting up your beacons!" delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+    
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Finished configurations. Thanks for setting up your beacons!"];
+    utterance.pitchMultiplier = 1.0;
+    utterance.rate = 0.1;
+    [self.synthesizer speakUtterance:utterance];
     
     [finished show];
     [self performSelector:@selector(hideAlert:) withObject:finished afterDelay:3];

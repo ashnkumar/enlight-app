@@ -29,10 +29,9 @@
     [super viewDidLoad];
     
     //Set up interface
-    UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, 60, screenWidth, 3)];
-    line.backgroundColor = [AppConstants enLightBlue];
-    [self.view addSubview:line];
-    
+    UIImageView *logo = [[UIImageView alloc]initWithFrame:CGRectMake(halfOfScreenWidth-22, 40, 44, 44)];
+    [logo setImage:[UIImage imageNamed:@"EnLightLogoReversed"]];
+    [self.view addSubview:logo];
     
     UILabel *welcomeLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, halfOfScreenHeight-77, screenWidth, 30)];
     welcomeLabel.text = @"Welcome!";
@@ -77,6 +76,17 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [super viewWillAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [super viewWillDisappear:animated];
 }
 
 @end
