@@ -66,6 +66,9 @@ const float beaconButtonImageHeight = 38.0;
 @end
 
 @implementation EnlightEstimoteViewController
+{
+    BOOL drawnToolTipsBefore;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -74,11 +77,7 @@ const float beaconButtonImageHeight = 38.0;
     self.db.delegate = self;
     
     //Tooltips setup
-   /* self.toolTip1 = [[UIView alloc]init];
-    self.toolTip2 = [[UIView alloc]init];
-    self.toolTip3 = [[UIView alloc]init];
-    self.toolTip4 = [[UIView alloc]init];
-*/
+    drawnToolTipsBefore = NO;
     
     //Set up view
     //White rectangle at bottom of the screen
@@ -265,13 +264,13 @@ const float beaconButtonImageHeight = 38.0;
 {
     UIView *toolTipRect = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 80, 20)];
     toolTipRect.backgroundColor = [AppConstants enLightBlue];
-    toolTipRect.layer.cornerRadius = 5;
+    toolTipRect.layer.cornerRadius = 4;
     toolTipRect.layer.masksToBounds = YES;
     
     UIImageView *triangleForToolTip = [[UIImageView alloc]initWithFrame:CGRectMake(5, 17, 10, 10)];
     [triangleForToolTip setImage:[UIImage imageNamed:@"toolTipTriangle"]];
     
-    UILabel *toolTipLabel = [[UILabel alloc]initWithFrame:CGRectMake(5, 2, 80-6, 30-4)];
+    UILabel *toolTipLabel = [[UILabel alloc]initWithFrame:CGRectMake(5, 1, 80-6, 20-4)];
     toolTipLabel.text = role;
     [toolTipLabel setTextColor:[AppConstants enLightWhite]];
     [toolTipLabel setFont:[UIFont fontWithName:lightFont size:12.0]];
@@ -282,6 +281,7 @@ const float beaconButtonImageHeight = 38.0;
         {
             [self.toolTip1 addSubview:toolTipRect];
             [self.toolTip1 addSubview:triangleForToolTip];
+            [self.toolTip1 addSubview:toolTipLabel];
             [self.toolTip1 setHidden:NO];
             break;
         }
@@ -289,6 +289,7 @@ const float beaconButtonImageHeight = 38.0;
         {
             [self.toolTip2 addSubview:toolTipRect];
             [self.toolTip2 addSubview:triangleForToolTip];
+            [self.toolTip2 addSubview:toolTipLabel];
             [self.toolTip2 setHidden:NO];
             break;
         }
@@ -296,6 +297,7 @@ const float beaconButtonImageHeight = 38.0;
         {
             [self.toolTip3 addSubview:toolTipRect];
             [self.toolTip3 addSubview:triangleForToolTip];
+            [self.toolTip3 addSubview:toolTipLabel];
             [self.toolTip3 setHidden:NO];
             break;
         }
@@ -303,12 +305,15 @@ const float beaconButtonImageHeight = 38.0;
         {
             [self.toolTip4 addSubview:toolTipRect];
             [self.toolTip4 addSubview:triangleForToolTip];
+            [self.toolTip4 addSubview:toolTipLabel];
             [self.toolTip4 setHidden:NO];
             break;
         }
         default:
             break;
     }
+    
+    drawnToolTipsBefore = YES;
 }
 
 
@@ -356,7 +361,7 @@ const float beaconButtonImageHeight = 38.0;
                 self.beacon1Color = currentBeaconColor;
                 
                 //CAT set the tooltip
-                self.toolTip1 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                self.toolTip1 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 5-30, 80, 30)];
                 [self.view addSubview:self.toolTip1];
                 [self.toolTip1 setHidden:YES];
                 break;
@@ -375,7 +380,7 @@ const float beaconButtonImageHeight = 38.0;
                 self.beacon2Color = currentBeaconColor;
                 
                 //CAT set the tooltip
-                self.toolTip2 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                self.toolTip2 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 5-30, 80, 30)];
                 [self.view addSubview:self.toolTip2];
                 [self.toolTip2 setHidden:YES];
                 break;
@@ -394,7 +399,7 @@ const float beaconButtonImageHeight = 38.0;
                 self.beacon3Color = currentBeaconColor;
                 
                 //CAT set the tooltip
-                self.toolTip3 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                self.toolTip3 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 5-30, 80, 30)];
                 [self.view addSubview:self.toolTip3];
                 [self.toolTip3 setHidden:YES];
                 break;
@@ -412,7 +417,7 @@ const float beaconButtonImageHeight = 38.0;
                 self.beacon4Color = currentBeaconColor;
                 
                 //CAT set the tooltip
-                self.toolTip4 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                self.toolTip4 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 5-30, 80, 30)];
                 [self.view addSubview:self.toolTip4];
                 [self.toolTip4 setHidden:YES];
                 break;
@@ -455,6 +460,15 @@ const float beaconButtonImageHeight = 38.0;
     {
         whichToolTip = 4;
         self.beacon4RoleLabel.text = [AppConstants beaconRoleList][buttonIndex];
+    }
+    
+    if (!drawnToolTipsBefore)
+    {
+        [self drawToolTip:[AppConstants beaconRoleList][buttonIndex] withToolTip:whichToolTip];
+    }
+    else
+    {
+        //Just update the label on the tooltip
     }
     
     [self drawToolTip:[AppConstants beaconRoleList][buttonIndex] withToolTip:whichToolTip];
