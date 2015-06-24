@@ -149,7 +149,7 @@ const float beaconButtonImageHeight = 38.0;
     // onboarding process that Estimote provides us (see note below)
     
     if (!self.myLocation) {
-        [self loadLocationsFromJSON];
+        [self loadLocationsFromJSON];//TEMPORARY
         //[self showLocationSetup];
     }
     
@@ -183,7 +183,7 @@ const float beaconButtonImageHeight = 38.0;
                 
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Done" message:[NSString stringWithFormat:@"%@", location] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alertView show];
-                
+                NSLog(@"putlocationdatatoparse should run");
                 self.myLocation = location;
                 
                 [self putLocationDataToParse]; //shouldwork
@@ -204,6 +204,7 @@ const float beaconButtonImageHeight = 38.0;
 
 - (void)putLocationDataToParse
 {
+    NSLog(@"inside putlocationdatatoparse");
     [self.myLocation.beacons enumerateObjectsUsingBlock:^(ESTPositionedBeacon *beacon, NSUInteger idx, BOOL *stop) {
         float beaconXPos = beacon.position.x;
         float beaconYPos = beacon.position.y;
@@ -262,7 +263,7 @@ const float beaconButtonImageHeight = 38.0;
     toolTipRect.layer.cornerRadius = 4;
     toolTipRect.layer.masksToBounds = YES;
     
-    UIImageView *triangleForToolTip = [[UIImageView alloc]initWithFrame:CGRectMake(5, 17, 10, 10)];
+    UIImageView *triangleForToolTip = [[UIImageView alloc]initWithFrame:CGRectMake(5, 17, 17, 17)];
     [triangleForToolTip setImage:[UIImage imageNamed:@"toolTipTriangle"]];
     
     
@@ -559,7 +560,7 @@ const float beaconButtonImageHeight = 38.0;
     [self performSelector:@selector(hideAlert:) withObject:finished afterDelay:2];
 }
 
-- (void)hideAlert:(UIAlertView *)finished //TEMPORARY!!!
+- (void)hideAlert:(UIAlertView *)finished
 {
     self.doneButton.hidden = YES;
     self.pleaseSelectRolesLabel.text = @"Here are your configured beacons.";
@@ -569,9 +570,9 @@ const float beaconButtonImageHeight = 38.0;
                                         self.beacon2Color: self.toolTipLabel2.text,
                                         self.beacon3Color: self.toolTipLabel3.text,
                                         self.beacon4Color: self.toolTipLabel4.text};
-                                        [self.db setAllBeaconsRoles:configuredBeacons]; //put to db
+                                        [self.db setAllBeaconsRoles:configuredBeacons]; //put roles to db
 
-     [self performSegueWithIdentifier:@"wandSegue" sender:self]; //Temporary
+     [self performSegueWithIdentifier:@"wandSegue" sender:self];
 }
 
 #pragma mark - Other

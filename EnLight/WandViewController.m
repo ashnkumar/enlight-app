@@ -55,6 +55,7 @@
     self.view.backgroundColor = [AppConstants enLightBlue];
     self.algoHelper = [[EnLightAlgorithm alloc] init];
     self.firstFlag = NO;
+    self.firstHeading = 0;
     
     [self setupIndoorNavStuff];
 
@@ -96,12 +97,6 @@
     self.latestLocation = @"none";
     
     [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(removeWelcomeLabel) userInfo:nil repeats:NO];
-}
-
-- (void)positionLabelTimer
-{
-    self.positionLabel.text = @"The bathroom is ahead in 20 feet.";
-    self.positionLabel.hidden = NO;
 }
 
 - (void)setupIndoorNavStuff
@@ -159,7 +154,6 @@
     [self.user setImage:[UIImage imageNamed:@"User"]];
     [self.view addSubview:self.user];
     
-    [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(positionLabelTimer) userInfo:nil repeats:NO]; //TEMPORARY
     
     // [AK] =============================================================
     //      This is where we get the indoor view to display to the user
@@ -286,10 +280,10 @@
                  withAccuracy:(ESTPositionAccuracy)positionAccuracy
                    inLocation:(ESTLocation *)location
 {
-    /*self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
+    self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
                                position.x,
                                position.y,
-                               position.orientation];*/ //TEMPORARY
+                               position.orientation];//temporary
     
     self.currentUserCoordinate = CGPointMake(position.x, position.y);
     
@@ -302,7 +296,7 @@
     self.positionView.hidden = YES;
     self.positionLabel.hidden = NO;
     
-    /*if (error.code == ESTIndoorPositionOutsideLocationError)
+    if (error.code == ESTIndoorPositionOutsideLocationError)
     {
         self.positionLabel.text = @"There was an error getting your location.";
     }
@@ -315,7 +309,7 @@
         utterance.rate = 0.1;
         
         [self.synthesizer speakUtterance:utterance];
-    }*/
+    }
     NSLog(@"%@", error.localizedDescription);
 }
 
@@ -371,23 +365,34 @@
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
+    double degrees;
+    //Normalize the heading based on the initial reading of the user's heading
     if (!self.firstFlag)
     {
-        //grab the heading (in degrees)
+        //Gvrab the heading (in degrees)
         self.firstHeading = newHeading.trueHeading;
+        degrees = 0;
+        self.firstFlag = YES;
+    }
+    else
+    {
+        degrees = newHeading.trueHeading - self.firstHeading;
+        if (degrees >= 360)
+        {
+            degrees -= 360; //Reset it to 0
+        }
     }
     
-    //TODO: Display self.user based on the user's first heading
-    
-    double degrees = newHeading.trueHeading;
+    NSLog(@"degrees: %f", degrees);
     double radians = degrees * M_PI / 180;
-    self.user.transform = CGAffineTransformMakeRotation(-radians);
+    self.user.transform = CGAffineTransformMakeRotation(radians);
     
+    //Test user's heading relative to beacons
     self.heading = newHeading.trueHeading;
     
     if (self.beaconsInDB.count == 0)
     {
-        //first call, get the beacons for the first time
+        //First call, get the beacons for the first time
         [self.db getBeacons];
     }
     else
