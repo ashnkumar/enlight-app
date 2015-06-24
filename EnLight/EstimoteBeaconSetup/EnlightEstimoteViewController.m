@@ -17,6 +17,7 @@
 #import "WandViewController.h"
 #import "EnLightButton.h"
 #import <AVFoundation/AVFoundation.h>
+#import <QuartzCore/QuartzCore.h>
 
 #define screenWidth [[UIScreen mainScreen] bounds].size.width
 #define screenHeight [[UIScreen mainScreen] bounds].size.height
@@ -44,10 +45,14 @@ const float beaconButtonImageHeight = 38.0;
 @property (nonatomic, strong) NSString *beacon4Color;
 
 // beacon role labels
-@property (strong, nonatomic) UILabel *beacon1RoleLabel;
-@property (strong, nonatomic) UILabel *beacon2RoleLabel;
-@property (strong, nonatomic) UILabel *beacon3RoleLabel;
-@property (strong, nonatomic) UILabel *beacon4RoleLabel;
+@property (strong, nonatomic) UILabel *beacon1RoleLabel; //Used in code but not shown (deprecated)
+@property (strong, nonatomic) UILabel *beacon2RoleLabel; //Used in code but not shown (deprecated)
+@property (strong, nonatomic) UILabel *beacon3RoleLabel; //Used in code but not shown (deprecated)
+@property (strong, nonatomic) UILabel *beacon4RoleLabel; //Used in code but not shown (deprecated)
+@property (strong, nonatomic) UIView *toolTip1;
+@property (strong, nonatomic) UIView *toolTip2;
+@property (strong, nonatomic) UIView *toolTip3;
+@property (strong, nonatomic) UIView *toolTip4;
 
 // other
 @property (strong, nonatomic) EnLightDBManager *db;
@@ -68,21 +73,27 @@ const float beaconButtonImageHeight = 38.0;
     self.db = [[EnLightDBManager alloc]init];
     self.db.delegate = self;
     
+    //Tooltips setup
+   /* self.toolTip1 = [[UIView alloc]init];
+    self.toolTip2 = [[UIView alloc]init];
+    self.toolTip3 = [[UIView alloc]init];
+    self.toolTip4 = [[UIView alloc]init];
+*/
     
     //Set up view
     //White rectangle at bottom of the screen
-    UIView *whiteTextRect = [[UIView alloc]initWithFrame:CGRectMake(0, screenHeight - 125, screenWidth, 125)];
+    UIView *whiteTextRect = [[UIView alloc]initWithFrame:CGRectMake(0, screenHeight - 110, screenWidth, 110)];
     whiteTextRect.backgroundColor = [AppConstants enLightWhite];
     [self.view addSubview:whiteTextRect];
     
     //Instructions inside white rectangle
-    int selectRolesLabelWidth = screenWidth * .75;
+    int selectRolesLabelWidth = screenWidth * .85;
     int selectRolesLabelHeight = 80;
     self.pleaseSelectRolesLabel = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/2 - selectRolesLabelWidth/2, whiteTextRect.frame.size.height/2 - selectRolesLabelHeight/2, selectRolesLabelWidth, selectRolesLabelHeight)];
     self.pleaseSelectRolesLabel.text = @"Almost there! Let’s assign roles to each of the beacons. Tap each beacon and select its role from the menu provided.";
     self.pleaseSelectRolesLabel.numberOfLines = 0;
     [self.pleaseSelectRolesLabel setTextColor:[AppConstants enLightBlack]];
-    [self.pleaseSelectRolesLabel setFont:[UIFont fontWithName:lightFont size:16.0]];
+    [self.pleaseSelectRolesLabel setFont:[UIFont fontWithName:lightFont size:15.0]];
     [self.pleaseSelectRolesLabel setTextAlignment:NSTextAlignmentCenter];
     [whiteTextRect addSubview:self.pleaseSelectRolesLabel];
     
@@ -250,6 +261,56 @@ const float beaconButtonImageHeight = 38.0;
     NSLog(@"Beacons: %@", beacons);
 }
 
+- (void)drawToolTip:(NSString *)role withToolTip:(int)num
+{
+    UIView *toolTipRect = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 80, 20)];
+    toolTipRect.backgroundColor = [AppConstants enLightBlue];
+    toolTipRect.layer.cornerRadius = 5;
+    toolTipRect.layer.masksToBounds = YES;
+    
+    UIImageView *triangleForToolTip = [[UIImageView alloc]initWithFrame:CGRectMake(5, 17, 10, 10)];
+    [triangleForToolTip setImage:[UIImage imageNamed:@"toolTipTriangle"]];
+    
+    UILabel *toolTipLabel = [[UILabel alloc]initWithFrame:CGRectMake(5, 2, 80-6, 30-4)];
+    toolTipLabel.text = role;
+    [toolTipLabel setTextColor:[AppConstants enLightWhite]];
+    [toolTipLabel setFont:[UIFont fontWithName:lightFont size:12.0]];
+    [toolTipLabel setTextAlignment:NSTextAlignmentCenter];
+    
+    switch (num) {
+        case 1:
+        {
+            [self.toolTip1 addSubview:toolTipRect];
+            [self.toolTip1 addSubview:triangleForToolTip];
+            [self.toolTip1 setHidden:NO];
+            break;
+        }
+        case 2:
+        {
+            [self.toolTip2 addSubview:toolTipRect];
+            [self.toolTip2 addSubview:triangleForToolTip];
+            [self.toolTip2 setHidden:NO];
+            break;
+        }
+        case 3:
+        {
+            [self.toolTip3 addSubview:toolTipRect];
+            [self.toolTip3 addSubview:triangleForToolTip];
+            [self.toolTip3 setHidden:NO];
+            break;
+        }
+        case 4:
+        {
+            [self.toolTip4 addSubview:toolTipRect];
+            [self.toolTip4 addSubview:triangleForToolTip];
+            [self.toolTip4 setHidden:NO];
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 
 // [AK] =============================================================
 // Calculates where on the wall the beacon actually is, and also
@@ -261,6 +322,7 @@ const float beaconButtonImageHeight = 38.0;
     UIView *roomView = self.roomViewRectangle;
     [location.beacons enumerateObjectsUsingBlock:^(ESTPositionedBeacon *beacon, NSUInteger idx, BOOL *stop) {
         
+        //Draw the beacons
         int relevantLineSegmentIdx = (idx > 0) ? idx-1 : 3;
         ESTOrientedLineSegment *relevantLineSegment = location.boundarySegments[relevantLineSegmentIdx];
         
@@ -292,6 +354,11 @@ const float beaconButtonImageHeight = 38.0;
                 [self.view addSubview:self.beacon1Button];
                 
                 self.beacon1Color = currentBeaconColor;
+                
+                //CAT set the tooltip
+                self.toolTip1 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                [self.view addSubview:self.toolTip1];
+                [self.toolTip1 setHidden:YES];
                 break;
             }
                 
@@ -306,6 +373,11 @@ const float beaconButtonImageHeight = 38.0;
                 [self.view addSubview:self.beacon2Button];
                 
                 self.beacon2Color = currentBeaconColor;
+                
+                //CAT set the tooltip
+                self.toolTip2 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                [self.view addSubview:self.toolTip2];
+                [self.toolTip2 setHidden:YES];
                 break;
             }
                 
@@ -318,12 +390,15 @@ const float beaconButtonImageHeight = 38.0;
                 [self.beacon3Button setImage:beaconBackgroundImage forState:UIControlStateNormal];
                 [self.beacon3Button addTarget:self action:@selector(choosingBeacon3Role) forControlEvents:UIControlEventTouchUpInside];
                 [self.view addSubview:self.beacon3Button];
-                
+
                 self.beacon3Color = currentBeaconColor;
+                
+                //CAT set the tooltip
+                self.toolTip3 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                [self.view addSubview:self.toolTip3];
+                [self.toolTip3 setHidden:YES];
                 break;
             }
-
-                
             case 3: {
                 float topLeftY = roomView.frame.origin.y;
                 float bottomLeftY = roomView.frame.origin.y + roomView.frame.size.height;
@@ -335,9 +410,13 @@ const float beaconButtonImageHeight = 38.0;
                 [self.view addSubview:self.beacon4Button];
                 
                 self.beacon4Color = currentBeaconColor;
+                
+                //CAT set the tooltip
+                self.toolTip4 = [[UIView alloc]initWithFrame:CGRectMake(beaconXPosition-(beaconButtonImageWidth/2), beaconYPosition-(beaconButtonImageHeight/2) - 10-30, 80, 30)];
+                [self.view addSubview:self.toolTip4];
+                [self.toolTip4 setHidden:YES];
                 break;
             }
-
             default:
                 break;
         }
@@ -349,27 +428,36 @@ const float beaconButtonImageHeight = 38.0;
 
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    int whichToolTip;
     if (buttonIndex == actionSheet.cancelButtonIndex)
     {
         [actionSheet dismissWithClickedButtonIndex:0 animated:YES];
     }
     else if (actionSheet.tag == 100)
     {
+        whichToolTip = 1;
         self.beacon1RoleLabel.text = [AppConstants beaconRoleList][buttonIndex];
     }
     
     else if (actionSheet.tag == 200)
     {
+        whichToolTip = 2;
         self.beacon2RoleLabel.text = [AppConstants beaconRoleList][buttonIndex];
     }
     
-    else if (actionSheet.tag == 300) {
+    else if (actionSheet.tag == 300)
+    {
+        whichToolTip = 3;
         self.beacon3RoleLabel.text = [AppConstants beaconRoleList][buttonIndex];
     }
     
-    else if (actionSheet.tag == 400) {
+    else if (actionSheet.tag == 400)
+    {
+        whichToolTip = 4;
         self.beacon4RoleLabel.text = [AppConstants beaconRoleList][buttonIndex];
     }
+    
+    [self drawToolTip:[AppConstants beaconRoleList][buttonIndex] withToolTip:whichToolTip];
     
     [self checkIfRolesAreAllAssigned];
 }
@@ -413,14 +501,25 @@ const float beaconButtonImageHeight = 38.0;
 
 - (void)doneConfiguringBeacons
 {
-    NSDictionary *configuredBeacons = @{self.beacon1Color: self.beacon1RoleLabel.text,
+    UIAlertView *finished = [[UIAlertView alloc]initWithTitle:@"Finished Configurations" message:@"Thank you for setting up your beacons!" delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
+    
+    [finished show];
+    [self performSelector:@selector(hideAlert:) withObject:finished afterDelay:2];
+    /*NSDictionary *configuredBeacons = @{self.beacon1Color: self.beacon1RoleLabel.text,
                                         self.beacon2Color: self.beacon2RoleLabel.text,
                                         self.beacon3Color: self.beacon3RoleLabel.text,
                                         self.beacon4Color: self.beacon4RoleLabel.text};
     [self.db setAllBeaconsWithConfig:configuredBeacons];
-    [self performSegueWithIdentifier:@"wandSegue" sender:self];
+    [self performSegueWithIdentifier:@"wandSegue" sender:self];*/ //Temporary!!!
 }
 
+- (void)hideAlert:(UIAlertView *)finished //TEMPORARY!!!
+{
+    self.doneButton.hidden = YES;
+    self.pleaseSelectRolesLabel.text = @"Here are your configured beacons.";
+    self.pleaseSelectRolesLabel.hidden = NO;
+    [finished dismissWithClickedButtonIndex:0 animated:YES];
+}
 
 #pragma mark - Other
 

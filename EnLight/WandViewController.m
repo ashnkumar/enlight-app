@@ -84,7 +84,7 @@
     [self.positionLabel setFont:[UIFont fontWithName:lightFont size:16.0]];
     [self.positionLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:self.positionLabel];
-
+    
     //Accessibility
     AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Your EnLight wand is now ready for use"];
     
@@ -96,6 +96,12 @@
     self.latestLocation = @"none";
     
     [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(removeWelcomeLabel) userInfo:nil repeats:NO];
+}
+
+- (void)positionLabelTimer
+{
+    self.positionLabel.text = @"The bathroom is ahead in 20 feet.";
+    self.positionLabel.hidden = NO;
 }
 
 - (void)setupIndoorNavStuff
@@ -152,6 +158,8 @@
     self.user = [[UIImageView alloc]initWithFrame:CGRectMake(userOriginX, userOriginY, userWidth, userHeight)];
     [self.user setImage:[UIImage imageNamed:@"User"]];
     [self.view addSubview:self.user];
+    
+    [NSTimer timerWithTimeInterval:5.0 target:self selector:@selector(positionLabelTimer) userInfo:nil repeats:NO]; //TEMPORARY
     
     // [AK] =============================================================
     //      This is where we get the indoor view to display to the user
@@ -278,10 +286,10 @@
                  withAccuracy:(ESTPositionAccuracy)positionAccuracy
                    inLocation:(ESTLocation *)location
 {
-    self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
+    /*self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
                                position.x,
                                position.y,
-                               position.orientation];
+                               position.orientation];*/ //TEMPORARY
     
     self.currentUserCoordinate = CGPointMake(position.x, position.y);
     
@@ -294,7 +302,7 @@
     self.positionView.hidden = YES;
     self.positionLabel.hidden = NO;
     
-    if (error.code == ESTIndoorPositionOutsideLocationError)
+    /*if (error.code == ESTIndoorPositionOutsideLocationError)
     {
         self.positionLabel.text = @"There was an error getting your location.";
     }
@@ -307,7 +315,7 @@
         utterance.rate = 0.1;
         
         [self.synthesizer speakUtterance:utterance];
-    }
+    }*/
     NSLog(@"%@", error.localizedDescription);
 }
 
