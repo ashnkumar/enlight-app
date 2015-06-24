@@ -55,30 +55,28 @@
     [self.view addSubview:nextButton];
     
     UILabel *subscriptLabel = [[UILabel alloc]initWithFrame:CGRectMake(10, screenHeight-80-10, screenWidth-20, 80)];
-    subscriptLabel.text = @"For testing purposes, we've combined the merchant’s beacon configuration app and consumer app into one.  This test version works best in a single room.";
+    subscriptLabel.text = @"For testing purposes, we've combined the merchant’s beacon configuration wand and consumer app into one.  This test version works best in a single room.";
     subscriptLabel.numberOfLines = 0;
     [subscriptLabel setFont:[UIFont fontWithName:lightFont size:14.0]];
     [subscriptLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:subscriptLabel];
     
-    /*self.synthesizer = [[AVSpeechSynthesizer alloc]init];
-    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Welcome! Let's set up your beacons. For testing purposes, we have combined the merchant’s beacon configuration app and consumer app into one.  This test version works best in a single room as additional beacons are needed to accommodate an entire building."];
+    self.synthesizer = [[AVSpeechSynthesizer alloc]init];
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Welcome! Let's set up your beacons. For testing purposes, we've combined the merchant’s beacon configuration app and consumer wand into one.  This test version works best in a single room as more beacons are needed for an entire building."];
     
     utterance.pitchMultiplier = 1.0;
     utterance.rate = 0.1;
     
-    [self.synthesizer speakUtterance:utterance];*///Remove
+    [self.synthesizer speakUtterance:utterance];
 }
 
 - (void)nextButtonPressed
 {
     [self performSegueWithIdentifier:estimoteSetupSegue sender:self];
-//    [self performSegueWithIdentifier:@"toPage2" sender:self];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

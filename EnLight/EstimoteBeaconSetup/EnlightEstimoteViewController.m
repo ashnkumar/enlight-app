@@ -27,8 +27,8 @@
 
 //#define TLEstimoteAppID @"enlight"
 //#define TLEstimoteAppToken @"0bc9e8569d2de758ce7700942af03190"
-//#define TLEstimoteAppID @"enlight-cat"
-//#define TLEstimoteAppToken
+#define TLEstimoteAppID @"enlight-cat"
+#define TLEstimoteAppToken @"094bf8bf4a7cc6fbb94939f8c16e76bc"
 
 const float beaconButtonImageWidth = 30.0;
 const float beaconButtonImageHeight = 38.0;
@@ -79,99 +79,38 @@ const float beaconButtonImageHeight = 38.0;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.db = [[EnLightDBManager alloc]init];
+    self.synthesizer = [[AVSpeechSynthesizer alloc]init];
+    self.db.delegate = self;
+    self.roomViewRectangle.alpha = 0.0;
+    
+    //Tooltips setup
+    drawnToolTip1Before = drawnToolTip2Before = drawnToolTip3Before = drawnToolTip4Before = NO;
+    
+    [self authorizeEnlight];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    if (!self.myLocation) {
-        //[self loadLocationsFromJSON];
-        [self showLocationSetup];
-    }
-    else
-    {
-        self.db = [[EnLightDBManager alloc]init];
-        self.db.delegate = self;
-        
-        //Tooltips setup
-        drawnToolTip1Before = drawnToolTip2Before = drawnToolTip3Before = drawnToolTip4Before = NO;
-        
-        
-        //Set up view
-        self.roomViewRectangle.alpha = 1.0;
-        
-        //White rectangle at bottom of the screen
-        UIView *whiteTextRect = [[UIView alloc]initWithFrame:CGRectMake(0, screenHeight - 110, screenWidth, 110)];
-        whiteTextRect.backgroundColor = [AppConstants enLightWhite];
-        [self.view addSubview:whiteTextRect];
-        
-        //Instructions inside white rectangle
-        int selectRolesLabelWidth = screenWidth * .85;
-        int selectRolesLabelHeight = 80;
-        self.pleaseSelectRolesLabel = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/2 - selectRolesLabelWidth/2, whiteTextRect.frame.size.height/2 - selectRolesLabelHeight/2, selectRolesLabelWidth, selectRolesLabelHeight)];
-        self.pleaseSelectRolesLabel.text = @"Almost there! Let’s assign roles to each of the beacons. Tap each beacon and select its role from the menu provided.";
-        self.pleaseSelectRolesLabel.numberOfLines = 0;
-        [self.pleaseSelectRolesLabel setTextColor:[AppConstants enLightBlack]];
-        [self.pleaseSelectRolesLabel setFont:[UIFont fontWithName:lightFont size:15.0]];
-        [self.pleaseSelectRolesLabel setTextAlignment:NSTextAlignmentCenter];
-        [whiteTextRect addSubview:self.pleaseSelectRolesLabel];
-        
-        //Finish button
-        int doneButtonWidth = selectRolesLabelWidth;
-        int doneButtonHeight = 44;
-        self.doneButton = [[EnLightButton alloc]init];
-        [self.doneButton setUp:CGRectMake(screenWidth/2 - doneButtonWidth/2, screenHeight - whiteTextRect.frame.size.height/2 - doneButtonHeight/2, doneButtonWidth, doneButtonHeight)];
-        [self.doneButton setBackgroundColor:[AppConstants enLightBlue]];
-        [self.doneButton setTitle:@"Finish" forState:UIControlStateNormal];
-        [self.doneButton addTarget:self action:@selector(doneConfiguringBeacons) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:self.doneButton];
-        
-        //Simulated nav bar
-        int navBarHeight = screenHeight*.12;
-        UIView *navbar = [[UIView alloc]initWithFrame:CGRectMake(0, 0, screenWidth, navBarHeight)];
-        [navbar setBackgroundColor:[AppConstants estimoteDarkGreen]];
-        [self.view addSubview:navbar];
-        
-        //Navbar's logo
-        int logoWidth = 45;
-        UIImageView *navbarLogo = [[UIImageView alloc]initWithFrame:CGRectMake(screenWidth/2-logoWidth/2, navBarHeight-10-logoWidth, logoWidth, logoWidth)];
-        [navbarLogo setImage:[UIImage imageNamed:@"estimoteDarkGreenLogo"]];
-        [navbar addSubview:navbarLogo];
-        
-        //Accessibility
-        AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Almost there! Let’s assign roles to each of the beacons. Tap each beacon and select its role from the menu provided."];
-        
-        utterance.pitchMultiplier = 1.0;
-        utterance.rate = 0.1;
-        
-        [self.synthesizer speakUtterance:utterance];
-        
-        
-        // [AK] =============================================================
-        // Logic to hide/show button/label based on if all beacons have
-        // been setup. See '(void)checkIfRolesAreAllAssigned' method below
-        // [AK] =============================================================
-        self.doneButton.hidden = YES;
-        self.pleaseSelectRolesLabel.hidden = NO;
-        
-        [self authorizeEnlight];
-    }
+    [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(waitToDecide) userInfo:nil repeats:NO];
 }
 
 - (void)authorizeEnlight
 {
-    [ESTConfig setupAppID:@"enlight-cat" andAppToken:@"094bf8bf4a7cc6fbb94939f8c16e76bc"];
+    [ESTConfig setupAppID:TLEstimoteAppID andAppToken:TLEstimoteAppToken];
+    NSLog([ESTConfig isAuthorized] ? @"YES authorized" : @"NO not authorized");
 }
 
-// [AK] =============================================================
-// @TODO: Right now this loads directly from the json file which has all
-// the relevant information to make a 'ESTLocation' (that's what they call
-// the whole room + beacons + etc. After we get all the UI working, we can
-// replace that JSON location with the Location object that Estimote gives us
-// from this 'showLocationSetup' onboarding process (this is the thing where
-// they guide the user around the room to set up the beacons
-// [AK] =============================================================
+- (void)waitToDecide
+{
+    if (!self.myLocation)
+    {
+        [self showLocationSetup];
+    }
+}
 
 - (void)showLocationSetup
 {
@@ -180,11 +119,15 @@ const float beaconButtonImageHeight = 38.0;
         
         [weakSelf dismissViewControllerAnimated:YES completion:^{
             if (location) {
-                
-                /*UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Done" message:[NSString stringWithFormat:@"%@", location] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alertView show];*/
-                NSLog(@"putlocationdatatoparse should run");
                 self.myLocation = location;
+                
+                //Accessibility
+                AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Almost there! Let’s assign roles to each of the beacons. Tap each beacon and select its role from the menu provided."];
+                
+                utterance.pitchMultiplier = 1.0;
+                utterance.rate = 0.1;
+                
+                [self.synthesizer speakUtterance:utterance];
                 
                 [self putLocationDataToParse]; //shouldwork
                 
@@ -204,28 +147,25 @@ const float beaconButtonImageHeight = 38.0;
 
 - (void)putLocationDataToParse
 {
-    NSLog(@"inside putlocationdatatoparse");
     [self.myLocation.beacons enumerateObjectsUsingBlock:^(ESTPositionedBeacon *beacon, NSUInteger idx, BOOL *stop) {
         float beaconXPos = beacon.position.x;
         float beaconYPos = beacon.position.y;
-        NSLog(@"putlocationdatatoparse: beaconXPos in enlightestimoteviewcontroller: %.2f, beaconYPos = %.2f", beaconXPos, beaconYPos);
-        [self.db setBeacon:nil withRole:nil withUDID:nil withMajor:nil withMinor:nil withX:beaconXPos withY:beaconYPos withMacAdd:beacon.macAddress]; //    [self.db setBeacon:nil withRole:nil withUDID:nil withMajor:nil withMinor:nil withX:10 withY:10 withMacAdd:@"e2795af17586"]; was tested and it worked
+        [self.db setBeacon:nil withRole:nil withUDID:nil withMajor:nil withMinor:nil withX:beaconXPos withY:beaconYPos withMacAdd:beacon.macAddress];
     }];
 }
 
 // For testing
-- (void)loadLocationsFromJSON
+/*- (void)loadLocationsFromJSON
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:@"ashwinLocation" ofType:@"json"];
     NSString *content = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     ESTLocation *location = [ESTLocationBuilder parseFromJSON:content];
     self.myLocation = location;
     [self mapBeaconsOnScreenWithLocation:(ESTLocation *)location];
-}
+}*/
 
 - (void)beaconsReturned:(NSMutableArray *)beacons
 {
-    NSLog(@"Beacons: %@", beacons);
 }
 
 -(void)updateToolTip:(NSString *)role withToolTip:(int)num
@@ -342,14 +282,60 @@ const float beaconButtonImageHeight = 38.0;
     
 }
 
+- (void)setUpMerchantConfigView
+{
+    //Set up view
+    self.roomViewRectangle.alpha = 1.0;
+    
+    //White rectangle at bottom of the screen
+    UIView *whiteTextRect = [[UIView alloc]initWithFrame:CGRectMake(0, screenHeight - 110, screenWidth, 110)];
+    whiteTextRect.backgroundColor = [AppConstants enLightWhite];
+    [self.view addSubview:whiteTextRect];
+    
+    //Instructions inside white rectangle
+    int selectRolesLabelWidth = screenWidth * .85;
+    int selectRolesLabelHeight = 80;
+    self.pleaseSelectRolesLabel = [[UILabel alloc]initWithFrame:CGRectMake(screenWidth/2 - selectRolesLabelWidth/2, whiteTextRect.frame.size.height/2 - selectRolesLabelHeight/2, selectRolesLabelWidth, selectRolesLabelHeight)];
+    self.pleaseSelectRolesLabel.text = @"Almost there! Let’s assign roles to each of the beacons. Tap each beacon and select its role from the menu provided.";
+    self.pleaseSelectRolesLabel.hidden = NO;
+    self.pleaseSelectRolesLabel.numberOfLines = 0;
+    [self.pleaseSelectRolesLabel setTextColor:[AppConstants enLightBlack]];
+    [self.pleaseSelectRolesLabel setFont:[UIFont fontWithName:lightFont size:15.0]];
+    [self.pleaseSelectRolesLabel setTextAlignment:NSTextAlignmentCenter];
+    [whiteTextRect addSubview:self.pleaseSelectRolesLabel];
+    
+    //Finish button
+    int doneButtonWidth = selectRolesLabelWidth;
+    int doneButtonHeight = 44;
+    self.doneButton = [[EnLightButton alloc]init];
+    [self.doneButton setUp:CGRectMake(screenWidth/2 - doneButtonWidth/2, screenHeight - whiteTextRect.frame.size.height/2 - doneButtonHeight/2, doneButtonWidth, doneButtonHeight)];
+    [self.doneButton setBackgroundColor:[AppConstants enLightBlue]];
+    [self.doneButton setTitle:@"Finish" forState:UIControlStateNormal];
+    [self.doneButton addTarget:self action:@selector(doneConfiguringBeacons) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.doneButton];
+    
+    //Simulated nav bar
+    int navBarHeight = screenHeight*.12;
+    UIView *navbar = [[UIView alloc]initWithFrame:CGRectMake(0, 0, screenWidth, navBarHeight)];
+    [navbar setBackgroundColor:[AppConstants estimoteDarkGreen]];
+    [self.view addSubview:navbar];
+    
+    //Navbar's logo
+    int logoWidth = 45;
+    UIImageView *navbarLogo = [[UIImageView alloc]initWithFrame:CGRectMake(screenWidth/2-logoWidth/2, navBarHeight-10-logoWidth, logoWidth, logoWidth)];
+    [navbarLogo setImage:[UIImage imageNamed:@"estimoteDarkGreenLogo"]];
+    [navbar addSubview:navbarLogo];
 
-// [AK] =============================================================
-// Calculates where on the wall the beacon actually is, and also
-// adjusts the color of the beacon image based on which beacon it is
-// [AK] =============================================================
+    self.doneButton.hidden = YES;
+    self.pleaseSelectRolesLabel.hidden = NO;
+}
 
 - (void)mapBeaconsOnScreenWithLocation:(ESTLocation *)location
 {
+    //Set up basic view
+    [self setUpMerchantConfigView];
+
+    //Set up beacon view
     UIView *roomView = self.roomViewRectangle;
     [location.beacons enumerateObjectsUsingBlock:^(ESTPositionedBeacon *beacon, NSUInteger idx, BOOL *stop) {
         
@@ -453,7 +439,6 @@ const float beaconButtonImageHeight = 38.0;
 
 
 #pragma mark - Action sheets
-
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     int whichToolTip = 0;
@@ -554,7 +539,7 @@ const float beaconButtonImageHeight = 38.0;
     UIAlertView *finished = [[UIAlertView alloc]initWithTitle:@"Finished Configurations" message:@"Thank you for setting up your beacons!" delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
     
     [finished show];
-    [self performSelector:@selector(hideAlert:) withObject:finished afterDelay:2];
+    [self performSelector:@selector(hideAlert:) withObject:finished afterDelay:3];
 }
 
 - (void)hideAlert:(UIAlertView *)finished
@@ -573,7 +558,6 @@ const float beaconButtonImageHeight = 38.0;
 }
 
 #pragma mark - Other
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"wandSegue"]) {

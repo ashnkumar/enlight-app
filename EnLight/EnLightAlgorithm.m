@@ -43,28 +43,11 @@
                                     userX:userCoordinates.x
                                     userY:userCoordinates.y])
             {
-               // NSLog(@"beacon returned %@ color", beacon.color);
                 returnedBeaconColor = beacon.color;
                 NSArray *result = [NSArray arrayWithObjects:[NSString stringWithFormat:@"%@", beacon.role], beacon.major, nil];
                 return result;
             }
         }
-        
-        /*[beaconsArray enumerateObjectsUsingBlock:^(NSDictionary *beaconDic, NSUInteger idx, BOOL *stop) {
-            float beaconX = [beaconDic[@"xCoord"] floatValue];
-            float beaconY = [beaconDic[@"yCoord"] floatValue];
-            
-            if ([self testBeaconWithColor:beaconDic[@"color"]
-                                  beaconX:beaconX
-                                  beaconY:beaconY
-                              withHeading:givenHeading
-                                    userX:userCoordinates.x
-                                    userY:userCoordinates.y])
-            {
-                returnedBeaconColor = beaconDic[@"color"];
-                *stop = YES;
-            }
-        }];*/
     }
     
     else
@@ -72,7 +55,6 @@
         NSLog(@"passed user coordinates in algorithm was not passed correctly");
         return nil;
     }
-    
     return nil;
 }
 

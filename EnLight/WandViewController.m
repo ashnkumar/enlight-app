@@ -24,12 +24,12 @@
 @interface WandViewController () <ESTIndoorLocationManagerDelegate>
 
 @property (strong, nonatomic)UILabel *welcomeLabel;
-@property (strong, nonatomic)UIView *building;
+//@property (strong, nonatomic)UIView *building;
 @property (strong, nonatomic)UIImageView *user;
-@property (strong, nonatomic)UILabel *descriptionLabel;
+//@property (strong, nonatomic)UILabel *descriptionLabel;
 @property (strong, nonatomic) AVSpeechSynthesizer *synthesizer;
 @property (strong, nonatomic) EnLightDBManager *db;
-@property (strong, nonatomic) NSMutableArray *beaconsInDB; //real, from DB
+@property (strong, nonatomic) NSMutableArray *beaconsInDB;
 @property (strong, nonatomic) NSArray *beaconsFound;
 @property (strong, nonatomic) NSString *latestLocation;
 @property (assign, nonatomic) BOOL firstFlag; //Used to normalize degrees of user's caret pointer in iPhone ui
@@ -41,7 +41,7 @@
 @property (nonatomic, strong) ESTLocation *location;
 @property (nonatomic, strong) ESTPositionView *positionView;
 @property (nonatomic, assign) CGPoint currentUserCoordinate;
-@property (strong, nonatomic) UILabel *positionLabel; //TODO: swtich this name to be more useful
+@property (strong, nonatomic) UILabel *positionLabel; //Displays all information on UI (incl. errors)
 @property (strong, nonatomic) EnLightAlgorithm *algoHelper;
 
 @end
@@ -81,7 +81,7 @@
     self.positionLabel.text = @"";
     self.positionLabel.numberOfLines = 0;
     self.positionLabel.textColor = [AppConstants enLightWhite];
-    [self.positionLabel setFont:[UIFont fontWithName:lightFont size:16.0]];
+    [self.positionLabel setFont:[UIFont fontWithName:lightFont size:18.0]];
     [self.positionLabel setTextAlignment:NSTextAlignmentCenter];
     [self.view addSubview:self.positionLabel];
     
@@ -152,21 +152,11 @@
     [self.user setImage:[UIImage imageNamed:@"User"]];
     [self.view addSubview:self.user];
     
-    
-    // [AK] =============================================================
-    //      This is where we get the indoor view to display to the user
-    //      I had problems with adding the "positionView" (the guy that
-    //      represents where the user is on the map) due to some CALayer
-    //      errors. If we can't figure this out, let's stick with the
-    //      basic version without the indoor view
-    // [AK] =============================================================
-    // Get position view from Estimote
     /*self.indoorLocationView = [[ESTIndoorLocationView alloc] initWithFrame:self.building.frame];
     self.indoorLocationView.backgroundColor = [UIColor clearColor];
     self.indoorLocationView.transform = CGAffineTransformIdentity;
     [self.view addSubview:self.indoorLocationView];*/
     
-    //Prepare other stuff
     self.beaconsInDB = [[NSMutableArray alloc]init];
     
     self.positionLabel.text = @"Scanning the area...";
@@ -190,11 +180,9 @@
 
 - (void)setUpConnections
 {
-    //Setup database connection
     self.db = [[EnLightDBManager alloc]init];
     self.db.delegate = self;
     
-    //Setup location manager
     self.locationManager = [[CLLocationManager alloc]init];
     if([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)])
     {
@@ -407,21 +395,6 @@
     {
         double headingToSend = self.heading;
         
-        // [AK] =============================================================
-        //      This is where the magic happens, I am checking whenever the
-        //      user's heading changes, if they are looking at a beacon
-        //      and displaying that beacon to the user
-        
-        //      @TODO: We need to have the speech synthesizer speak out the
-        //      ROLE of the beacon (right now it just displays the color,
-        //      so we need to get the beaconMapping from parse somewhere and
-        //      figure out what role that color corresponds to (you can add
-        //      that role checking in the algorithm or elsewhere, doesn't
-        //      need to be done here)
-        
-        // [AK] =============================================================
-        
-        
         NSArray *returnedMatchingBeacon = [self.algoHelper beaconMatchingHeading:headingToSend withCoordinates:self.currentUserCoordinate withBeacons:self.beaconsInDB];
         
         if ([returnedMatchingBeacon count] == 2)
@@ -431,7 +404,8 @@
     }
 }
 
-- (void)displayFoundBeacons:(NSArray *)returnedMatchingBeacon //returnedMatchingBeacon holds role & major
+//returnedMatchingBeacon holds role & major
+- (void)displayFoundBeacons:(NSArray *)returnedMatchingBeacon
 {
     if (![self.latestLocation isEqualToString:[returnedMatchingBeacon firstObject]])
     {
@@ -452,7 +426,8 @@
             }
         }
         
-        NSString *resultingString = [NSString stringWithFormat:@"The %@ is ahead %@", [returnedMatchingBeacon firstObject], beaconFeetString];
+        NSString *foundRole = [returnedMatchingBeacon firstObject];
+        NSString *resultingString = [NSString stringWithFormat:@"The %@ is ahead %@", [foundRole lowercaseString], beaconFeetString];
         self.positionLabel.text = resultingString;
         
         AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:resultingString];
@@ -472,6 +447,5 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 @end

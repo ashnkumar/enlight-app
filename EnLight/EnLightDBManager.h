@@ -17,9 +17,10 @@
 @interface EnLightDBManager : NSObject
 @property (nonatomic, weak) id<EnLightDBProtocol> delegate;
 @property (nonatomic, assign) BOOL haveGottenBeaconsBefore;
+
 - (void)setBeacon:(NSString *)color withRole:(NSString *)role withUDID:(NSString *)udid withMajor:(NSString *)major withMinor:(NSString *)minor withX:(float)xCoord withY:(float)yCoord withMacAdd:(NSString *)mac;
 
-//Returns an array containing objects of type BeaconObject
+//Calls a delegate method returning an array containing objects of type BeaconObject
 - (void)getBeacons;
 
 // Sets all beacons when merchant configures them
