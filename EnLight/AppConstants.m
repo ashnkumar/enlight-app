@@ -90,6 +90,7 @@
 + (NSArray *)beaconRoleList
 {
     return @[@"Restroom", @"Cashier", @"Front Door", @"Exit"];
+    //return @[@"chipotle", @"chicken", @"tummy Door", @"whee"];
 }
 
 @end

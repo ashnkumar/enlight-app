@@ -23,6 +23,6 @@
 - (void)getBeacons;
 
 // Sets all beacons when merchant configures them
-- (void)setAllBeaconsWithConfig:(NSDictionary *)configDictionary;
+- (void)setAllBeaconsRoles:(NSDictionary *)configDictionary;
 
 @end

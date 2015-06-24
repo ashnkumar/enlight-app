@@ -25,32 +25,48 @@
 
 - (void)setBeacon:(NSString *)color withRole:(NSString *)role withUDID:(NSString *)udid withMajor:(NSString *)major withMinor:(NSString *)minor withX:(float)xCoord withY:(float)yCoord withMacAdd:(NSString *)mac
 {
-    PFQuery *query = [PFQuery queryWithClassName:@"Beacon"];
-    [query whereKey:@"macAddress" equalTo:mac];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (!error) {
-            // Found
-            if ([objects count] >= 1)
-            {
-                PFObject *beacon = [objects firstObject];
-                //Capabilities currently only allow setting  role
-                [beacon setObject:role forKey:@"Role"];
-                [beacon saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                    if (!succeeded) {
-                        NSLog(@"Error setting beacon to DB: %@", [error localizedDescription]);
-                    }
-                }];
+    if (mac)
+    {
+        PFQuery *query = [PFQuery queryWithClassName:@"Beacon"];
+        [query whereKey:@"macAddress" equalTo:mac];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (!error) {
+                // Found
+                if ([objects count] >= 1)
+                {
+                    PFObject *beacon = [objects firstObject];
+                    if (color)
+                        [beacon setObject:color forKey:@"Color"];
+                    if (role)
+                        [beacon setObject:role forKey:@"Role"];
+                    if (udid)
+                        [beacon setObject:udid forKey:@"UDID"];
+                    if (major)
+                        [beacon setObject:major forKey:@"Major"];
+                    if (minor)
+                        [beacon setObject:minor forKey:@"Minor"];
+                    if(xCoord != 0) //can never be 0 because 0,0 is the center of all beacons
+                        [beacon setObject:[NSString stringWithFormat:@"%f",xCoord] forKey:@"x"];
+                    if (yCoord != 0)
+                        [beacon setObject:[NSString stringWithFormat:@"%f",yCoord] forKey:@"y"];
+                
+                    [beacon saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                        if (!succeeded) {
+                            NSLog(@"Error setting beacon to DB: %@", [error localizedDescription]);
+                        }
+                    }];
+                }
+                else
+                {
+                    NSLog(@"Error: DB returned 0 or more than 1 object");
+                }
+            
             }
-            else
-            {
-                NSLog(@"Error: DB returned 0 or more than 1 object");
+            else {
+                NSLog(@"Error reaching server");
             }
-
-        }
-        else {
-            NSLog(@"Error reaching server");
-        }
-    }];
+        }];
+    }
 }
 
 // [AK] =============================================================
@@ -82,7 +98,7 @@
             }
             else
             {
-                NSLog(@"No baecons found with that color in database!");
+                NSLog(@"No beacons found with that color in database!");
             }
         }
         else {
@@ -124,7 +140,7 @@
     }
 }
 
-- (void)setAllBeaconsWithConfig:(NSDictionary *)configDictionary
+- (void)setAllBeaconsRoles:(NSDictionary *)configDictionary
 {
     for (NSString *beaconColor in [configDictionary allKeys]) {
         [self simpleSetBeaconWithColor:beaconColor withRole:configDictionary[beaconColor]];
