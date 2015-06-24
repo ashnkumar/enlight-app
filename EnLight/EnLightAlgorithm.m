@@ -120,7 +120,6 @@
     }
     //Edge cases: userX == beaconX and/or userX == beaconY; ignore for now (beacons change so often you probably wouldn't be exactly equal ever
 
-    NSLog(@"testing beacon color: %@, given heading %f, neededheading: %f", beaconColor, givenHeading, neededHeading);
     
     if ((givenHeading >= neededHeading - variance) && (givenHeading <= neededHeading + variance))
     {

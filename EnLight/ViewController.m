@@ -29,7 +29,8 @@
     [super viewDidLoad];
     
     //Set up interface
-    UIImageView *logo = [[UIImageView alloc]initWithFrame:CGRectMake(halfOfScreenWidth-22, 40, 44, 44)];
+    float logoWidth = screenWidth * .15;
+    UIImageView *logo = [[UIImageView alloc]initWithFrame:CGRectMake(halfOfScreenWidth-(logoWidth/2), 40, logoWidth, logoWidth)];
     [logo setImage:[UIImage imageNamed:@"EnLightLogoReversed"]];
     [self.view addSubview:logo];
     
@@ -61,7 +62,7 @@
     [self.view addSubview:subscriptLabel];
     
     self.synthesizer = [[AVSpeechSynthesizer alloc]init];
-    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Welcome! Let's set up your beacons. For testing purposes, we've combined the merchant’s beacon configuration app and consumer wand into one.  This test version works best in a single room as more beacons are needed for an entire building."];
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Welcome! Let's set up your beacons. For testing purposes, we've combined the merchant’s beacon configuration app and consumer wand into one.  This test version works best in a single room as more beacons are needed for an entire building. Please calibrate your phone's compass before using EnLight."];
     
     utterance.pitchMultiplier = 1.0;
     utterance.rate = 0.1;

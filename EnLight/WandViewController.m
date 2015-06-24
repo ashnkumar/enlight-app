@@ -59,7 +59,8 @@
     [self setupIndoorNavStuff];
 
     //Add the EnLight logo
-    UIImageView *logoView = [[UIImageView alloc]initWithFrame:CGRectMake(halfOfScreenWidth-25, 40, 50, 50)];
+    float logoWidth = screenWidth *.15;
+    UIImageView *logoView = [[UIImageView alloc]initWithFrame:CGRectMake(halfOfScreenWidth-(logoWidth/2), 40, logoWidth, logoWidth)];
     [logoView setImage:[UIImage imageNamed:@"EnLightLogo"]];
     
     [self.view addSubview:logoView];
@@ -364,7 +365,6 @@
         }
     }
     
-    NSLog(@"degrees: %f", degrees);
     double radians = degrees * M_PI / 180;
     self.user.transform = CGAffineTransformMakeRotation(radians);
     

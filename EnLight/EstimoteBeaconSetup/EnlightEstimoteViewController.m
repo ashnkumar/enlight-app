@@ -101,7 +101,6 @@ const float beaconButtonImageHeight = 38.0;
 - (void)authorizeEnlight
 {
     [ESTConfig setupAppID:TLEstimoteAppID andAppToken:TLEstimoteAppToken];
-    NSLog([ESTConfig isAuthorized] ? @"YES authorized" : @"NO not authorized");
 }
 
 - (void)waitToDecide
@@ -133,12 +132,7 @@ const float beaconButtonImageHeight = 38.0;
                 
                 [self mapBeaconsOnScreenWithLocation:(ESTLocation *)location];
             }
-            
-            else {
-                NSLog(@"No location");
-            }
         }];
-
     }];
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:nextVC];
@@ -321,7 +315,7 @@ const float beaconButtonImageHeight = 38.0;
     [self.view addSubview:navbar];
     
     //Navbar's logo
-    int logoWidth = 44;
+    float logoWidth = screenWidth *.15;
     UIImageView *navbarLogo = [[UIImageView alloc]initWithFrame:CGRectMake(screenWidth/2-logoWidth/2, navBarHeight-10-logoWidth, logoWidth, logoWidth)];
     [navbarLogo setImage:[UIImage imageNamed:@"estimoteDarkGreenLogo"]];
     [navbar addSubview:navbarLogo];
@@ -536,6 +530,7 @@ const float beaconButtonImageHeight = 38.0;
 
 - (void)doneConfiguringBeacons
 {
+    self.doneButton.hidden = YES;
     UIAlertView *finished = [[UIAlertView alloc]initWithTitle:@"Finished Configurations" message:@"Thank you for setting up your beacons!" delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
     
     AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Finished configurations. Thanks for setting up your beacons!"];
