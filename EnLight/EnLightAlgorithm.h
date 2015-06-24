@@ -13,7 +13,7 @@
 
 @interface EnLightAlgorithm : NSObject
 
-- (NSString *)beaconMatchingHeading:(float)givenHeading
+- (NSArray *)beaconMatchingHeading:(float)givenHeading
                     withCoordinates:(CGPoint)userCoordinates withBeacons:(NSArray *)beaconsArray;
 
 @end

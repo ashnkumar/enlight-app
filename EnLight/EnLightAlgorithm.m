@@ -9,7 +9,7 @@
 #import "EnLightAlgorithm.h"
 #import "BeaconObject.h"
 
-#define variance 1 //Set this variance for how big to make the acceptance range IN DEGREES
+#define variance 5 //Set this variance for how big to make the acceptance range IN DEGREES
 
 @interface EnLightAlgorithm ()
 @end
@@ -25,7 +25,7 @@
     return self;
 }
 
-- (NSString *)beaconMatchingHeading:(float)givenHeading
+- (NSArray *)beaconMatchingHeading:(float)givenHeading
                     withCoordinates:(CGPoint)userCoordinates withBeacons:(NSArray *)beaconsArray
 {
     if (userCoordinates.x && userCoordinates.y)
@@ -45,7 +45,8 @@
             {
                // NSLog(@"beacon returned %@ color", beacon.color);
                 returnedBeaconColor = beacon.color;
-                return returnedBeaconColor;
+                NSArray *result = [NSArray arrayWithObjects:[NSString stringWithFormat:@"%@", beacon.role], beacon.major, nil];
+                return result;
             }
         }
         

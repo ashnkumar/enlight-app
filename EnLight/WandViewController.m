@@ -41,9 +41,8 @@
 @property (nonatomic, strong) ESTLocation *location;
 @property (nonatomic, strong) ESTPositionView *positionView;
 @property (nonatomic, assign) CGPoint currentUserCoordinate;
-@property (strong, nonatomic) UILabel *positionLabel;
+@property (strong, nonatomic) UILabel *positionLabel; //TODO: swtich this name to be more useful
 @property (strong, nonatomic) EnLightAlgorithm *algoHelper;
-@property (weak, nonatomic) IBOutlet UILabel *foundBeaconLabel;
 
 @end
 
@@ -87,11 +86,10 @@
     [self.view addSubview:self.positionLabel];
     
     //Accessibility
+    self.synthesizer = [[AVSpeechSynthesizer alloc]init];
     AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Your EnLight wand is now ready for use"];
-    
     utterance.pitchMultiplier = 1.0;
     utterance.rate = 0.1;
-    
     [self.synthesizer speakUtterance:utterance];
     
     self.latestLocation = @"none";
@@ -170,7 +168,8 @@
     
     //Prepare other stuff
     self.beaconsInDB = [[NSMutableArray alloc]init];
-    self.synthesizer = [[AVSpeechSynthesizer alloc]init];
+    
+    self.positionLabel.text = @"Scanning the area...";
     AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Scanning the area"];
     
     utterance.pitchMultiplier = 1.0;
@@ -280,10 +279,10 @@
                  withAccuracy:(ESTPositionAccuracy)positionAccuracy
                    inLocation:(ESTLocation *)location
 {
-    self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
+    /*self.positionLabel.text = [NSString stringWithFormat:@"x: %.2f  y: %.2f   α: %.2f",
                                position.x,
                                position.y,
-                               position.orientation];//temporary
+                               position.orientation];*/
     
     self.currentUserCoordinate = CGPointMake(position.x, position.y);
     
@@ -302,13 +301,7 @@
     }
     else if (error.code == ESTIndoorMagnetometerInitializationError)
     {
-        self.positionLabel.text = @"It seems your magnetometer is not working.";
-        AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"It seems your magnetometer isn't working."];
-        
-        utterance.pitchMultiplier = 1.0;
-        utterance.rate = 0.1;
-        
-        [self.synthesizer speakUtterance:utterance];
+        self.positionLabel.text = @"It seems your magnetometer isn't working.";
     }
     NSLog(@"%@", error.localizedDescription);
 }
@@ -429,32 +422,46 @@
         // [AK] =============================================================
         
         
-        NSString *returnedBeaconColor = [self.algoHelper beaconMatchingHeading:headingToSend withCoordinates:self.currentUserCoordinate withBeacons:self.beaconsInDB];
+        NSArray *returnedMatchingBeacon = [self.algoHelper beaconMatchingHeading:headingToSend withCoordinates:self.currentUserCoordinate withBeacons:self.beaconsInDB];
         
-        if (returnedBeaconColor)
+        if ([returnedMatchingBeacon count] == 2)
         {
-            [self displayFoundBeacons:returnedBeaconColor];
-        }
-        
-        else
-        {
-            self.foundBeaconLabel.text = @"";
+            [self displayFoundBeacons:returnedMatchingBeacon];
         }
     }
 }
 
-- (void)displayFoundBeacons:(NSString *)returnedBeaconColor
+- (void)displayFoundBeacons:(NSArray *)returnedMatchingBeacon //returnedMatchingBeacon holds role & major
 {
-    self.foundBeaconLabel.text = returnedBeaconColor;
-    NSLog(@"did update heading returned beacon color %@", returnedBeaconColor);
-    
-    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:returnedBeaconColor];
-    
-    utterance.pitchMultiplier = 1.0;
-    utterance.rate = 0.1;
-    
-    [self.synthesizer speakUtterance:utterance];
-    //figure out and say what the role is
+    if (![self.latestLocation isEqualToString:[returnedMatchingBeacon firstObject]])
+    {
+        NSString *beaconFeetString = @"";
+        NSString *desiredMajor = [returnedMatchingBeacon lastObject];
+        
+        for (CLBeacon *beaconInBeaconsFound in self.beaconsFound)
+        {
+            
+            NSString *beaconFoundMajor = [NSString stringWithFormat:@"%@", beaconInBeaconsFound.major];
+            if ([desiredMajor isEqualToString:beaconFoundMajor])
+            {
+                float beaconDistanceInFeet = beaconInBeaconsFound.accuracy * 3.28084;
+                if (beaconDistanceInFeet > 0) //Just in case the accuracy returns negative (happens when can't get location)
+                {
+                    beaconFeetString = [NSString stringWithFormat:@"in %.0f feet", beaconDistanceInFeet];
+                }
+            }
+        }
+        
+        NSString *resultingString = [NSString stringWithFormat:@"The %@ is ahead %@", [returnedMatchingBeacon firstObject], beaconFeetString];
+        self.positionLabel.text = resultingString;
+        
+        AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:resultingString];
+        utterance.pitchMultiplier = 1.0;
+        utterance.rate = 0.1;
+        
+        [self.synthesizer speakUtterance:utterance];
+        self.latestLocation = [returnedMatchingBeacon firstObject];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
